@@ -1,33 +1,35 @@
 package meujogo.modelo;
 
-
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-public class Fase extends JPanel{
+public class Fase extends JPanel {
 
-// eu privei o fundo para poder acessa ele depois
-private Image background;
+    private Image background;
 
-//construtor simples
-public Fase() {
-    // Corrigido para usar / em vez de \\ (funciona em todos os sistemas operacionais)
-    ImageIcon referencia = new ImageIcon(getClass().getResource("/res/background.jpg"));
-    background = referencia.getImage();
-   }
+    public Fase() {
+        // Tenta carregar a imagem de fundo
+        java.net.URL imgURL = getClass().getResource("/res/background.jpg");
+        if (imgURL != null) {
+            background = new ImageIcon(imgURL).getImage();
+        } else {
+            System.err.println("Erro: Imagem de fundo não encontrada!");
+            background = null;
+            setBackground(Color.BLACK);
+        }
+    }
 
-
-//paint e pinta mais aqui no contexto eu quero printar o fundo
-
-@Override
-protected void paintComponent(Graphics g) {
-    super.paintComponent(g); // Isso limpa o painel antes de desenhar
-
-    Graphics2D grafico = (Graphics2D) g;
-
-    grafico.drawImage(background, 0, 0, null);
-}
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (background != null) {
+            Graphics2D grafico = (Graphics2D) g;
+            grafico.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+        }
+        // Se background for null, o fundo será preto (setBackground)
+    }
 }
