@@ -1,55 +1,169 @@
 package meujogo.modelo;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
+import java.util.Timer;
+
+import javax.swing.*;
 
 public class Fase extends JPanel {
+
     private Image background;
     private List<Personagem> personagens;
+    private List<Alma> almas;
+    private List<Cometa> cometas;
+    private Random random;
+    private Timer timerCometas;
+    private boolean jogoAtivo;
+    private Image imagemAleatoria;
 
     public Fase() {
         personagens = new ArrayList<>();
+        almas = new ArrayList<>();
+        cometas = new ArrayList<>();
+        random = new Random();
+        jogoAtivo = true;
         setBackground(Color.BLACK);
-        
+
         try {
             background = new ImageIcon(getClass().getResource("/res/background/background.jpeg")).getImage();
         } catch (Exception e) {
             System.err.println("Erro ao carregar background: " + e.getMessage());
             background = null;
         }
+
+        criarAlmas();
+        iniciarSpawnCometas();
     }
 
-    public List<Personagem> getPersonagens() {
-        return personagens;
+    private void criarAlmas() {
+        String[] imagensAlmas = {"alma.png"};
+        for (int i = 0; i < 5; i++) {
+            int x = random.nextInt(1000) + 100;
+            int y = random.nextInt(500) + 100;
+            String imgAleatoria = imagensAlmas[random.nextInt(imagensAlmas.length)];
+            almas.add(new Alma(x, y, imgAleatoria));
+        }
+    }
+
+    private void iniciarSpawnCometas() {
+        timerCometas = new Timer();
+        timerCometas.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (jogoAtivo) {
+                    spawnCometa();
+                }
+            }
+        }, 2000, 1000);
+    }
+
+    private void spawnCometa() {
+        int y = random.nextInt(getHeight() - 100) + 50;
+        int velocidade = random.nextInt(15) + 3;
+        String[] imagens = {"cometa1.png"};
+        String img = imagens[random.nextInt(imagens.length)];
+        cometas.add(new Cometa(getWidth(), y, velocidade, img));
+    }
+
+    public boolean todasAlmasColetadas() {
+        for (Alma alma : almas) {
+            if (!alma.isColetada()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void atualizar() {
+        if (todasAlmasColetadas() && jogoAtivo) {
+            jogoAtivo = false;
+            for (Personagem p : personagens) {
+                if (p instanceof God) {
+                    ((God) p).vitoria();
+                    break;
+                }
+            }
+            return;
+        }
+
+        for (Iterator<Cometa> it = cometas.iterator(); it.hasNext();) {
+            Cometa cometa = it.next();
+            cometa.mover();
+
+            for (Personagem p : personagens) {
+                if (p instanceof God && cometa.colideCom((God) p)) {
+                    ((God) p).morrer();
+                    jogoAtivo = false;
+                    break;
+                }
+            }
+
+            if (!cometa.isAtivo()) {
+                it.remove();
+            }
+        }
+
+        repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D grafico = (Graphics2D) g;
-        
-        // Desenha background
+
         if (background != null) {
             grafico.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         }
-        
-        // Desenha personagens
+
+        for (Alma alma : almas) {
+            if (!alma.isColetada()) {
+                BufferedImage img = alma.getImagem();
+                if (img != null) {
+                    grafico.drawImage(img, alma.getX(), alma.getY(), 30, 30, null);
+                }
+            }
+        }
+
+        for (Cometa cometa : cometas) {
+            if (cometa.isAtivo()) {
+                BufferedImage img = cometa.getImagem();
+                if (img != null) {
+                    grafico.drawImage(img, cometa.getX(), cometa.getY(),
+                            cometa.getLargura(), cometa.getAltura(), null);
+                }
+            }
+        }
+
         for (Personagem p : personagens) {
-            if (p instanceof God) {
-                God god = (God) p;
-                god.verificarFinalDaFase(this);
+            if (imagemAleatoria != null) {
+                // Desenha a imagem aleatória no centro da tela
+                int largura = 100;
+                int altura = 100;
+                int x = (getWidth() - largura) / 2;
+                int y = (getHeight() - altura) / 2;
+                grafico.drawImage(imagemAleatoria, x, y, largura, altura, this);
             }
             desenharPersonagem(grafico, p);
         }
     }
-    
+
+    private void verificarColisaoComAlmas(God god) {
+        for (Alma alma : almas) {
+            if (!alma.isColetada() && colisao(god, alma)) {
+                alma.setColetada(true);
+                god.coletarAlma();
+                break;
+            }
+        }
+    }
+
+    private boolean colisao(Personagem a, Alma b) {
+        return Math.abs(a.getX() - b.getX()) < 40 && Math.abs(a.getY() - b.getY()) < 40;
+    }
+
     private void desenharPersonagem(Graphics2D g, Personagem p) {
         if (p instanceof God) {
             God god = (God) p;
@@ -57,19 +171,18 @@ public class Fase extends JPanel {
             if (img != null) {
                 g.drawImage(img, p.getX(), p.getY(), 50, 50, null);
             }
-        } else {
-            g.setColor(Color.RED);
-            g.fillRect(p.getX(), p.getY(), 50, 50);
         }
-        
-        // Barra de vida
+
         g.setColor(Color.RED);
         g.fillRect(p.getX(), p.getY() - 10, 50, 5);
         g.setColor(Color.GREEN);
-        g.fillRect(p.getX(), p.getY() - 10, (int)(50 * ((double)p.getVida()/100)), 5);
-        
-        // Nome
+        g.fillRect(p.getX(), p.getY() - 10, (int) (50 * ((double) p.getVida() / 100)), 5);
+
         g.setColor(Color.WHITE);
         g.drawString(p.getNome(), p.getX(), p.getY() - 15);
+    }
+
+    public List<Personagem> getPersonagens() {
+        return personagens;
     }
 }

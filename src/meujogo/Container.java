@@ -1,15 +1,21 @@
 package meujogo;
 
-import javax.swing.JFrame;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import meujogo.modelo.Fase;
 import meujogo.modelo.God;
+import meujogo.modelo.Personagem;
 import meujogo.modelo.Teclado;
 
 public class Container extends JFrame {
+    private Fase fase;
+    private Timer gameLoop;
+
     public Container() {
-        Fase fase = new Fase();
-        
-        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, 30, 20, "god.png");
+        fase = new Fase();
+
+        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "god.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
@@ -18,12 +24,69 @@ public class Container extends JFrame {
         setFocusable(true);
         add(fase);
 
-        setTitle("Jogo Beta Em Java");
+        setTitle("Jogo Beta Em Java - Cometas Assassinos");
         setSize(1200, 708);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
+
+        // Game loop
+        gameLoop = new Timer(16, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (fase.todasAlmasColetadas()) {
+                    vitoria();
+                    return;
+                }
+                fase.atualizar();
+                
+                for (Personagem p : fase.getPersonagens()) {
+                    if (p instanceof God && ((God)p).isMorto()) {
+                        gameOver();
+                        break;
+                    }
+                }
+            }
+        });
+        gameLoop.start();
+        fase.setFocusable(true);
+        fase.requestFocusInWindow();
+    }
+
+    private void vitoria() {
+        gameLoop.stop();
+        JOptionPane.showMessageDialog(this, 
+            "Parabéns! Você coletou todas as almas!\nVocê venceu o jogo!", 
+            "Vitória", 
+            JOptionPane.INFORMATION_MESSAGE);
+        reiniciarJogo();
+    }
+
+    private void gameOver() {
+        gameLoop.stop();
+        JOptionPane.showMessageDialog(this, "Game Over! O cometa te pegou!", "Fim de Jogo", JOptionPane.INFORMATION_MESSAGE);
+        int resposta = JOptionPane.showConfirmDialog(this, "Deseja jogar novamente?", "Reiniciar", JOptionPane.YES_NO_OPTION);
+        if (resposta == JOptionPane.YES_OPTION) {
+            reiniciarJogo();
+        } else {
+            System.exit(0);
+        }
+    }
+
+    private void reiniciarJogo() {
+        getContentPane().removeAll();
+        fase = new Fase();
+        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "god.png");
+        deus.setX(100);
+        deus.setY(100);
+        fase.getPersonagens().add(deus);
+
+        addKeyListener(new Teclado(fase));
+        add(fase);
+        revalidate();
+        repaint();
+        gameLoop.start();
     }
 
     public static void main(String[] args) {

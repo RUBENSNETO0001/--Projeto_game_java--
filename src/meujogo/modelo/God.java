@@ -4,36 +4,69 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class God extends Personagem {
+
     private BufferedImage imagem;
     private BufferedImage imagemOriginal;
-    private BufferedImage imagemProxima;
+    private BufferedImage imagemEfeito;
     private boolean morto = false;
+    private Timer timerEfeito;
+    private int almasColetadas = 0;
 
-    public God(String nome, int vida, int ataque, int defesa, String caminhoImagem) {
-        super(nome, vida, ataque, defesa);
+    public God(String nome, int vida, String caminhoImagem) {
+        super(nome, vida);
         carregarImagens(caminhoImagem);
     }
 
     private void carregarImagens(String caminhoImagem) {
-    try {
-        // Método alternativo usando ClassLoader
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/persona/" + caminhoImagem);
-        if (inputStream != null) {
-            this.imagemOriginal = ImageIO.read(inputStream);
-            this.imagem = imagemOriginal;
-            inputStream.close();
-        } else {
-            throw new IOException("Arquivo não encontrado: res/persona/" + caminhoImagem);
+        try {
+            // Carrega imagem normal
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/persona/posseprincipal.png");
+            if (inputStream != null) {
+                this.imagemOriginal = ImageIO.read(inputStream);
+                this.imagem = imagemOriginal;
+                inputStream.close();
+            }
+
+            // Carrega imagem de efeito
+            inputStream = getClass().getClassLoader().getResourceAsStream("res/persona/efeitoalma.png");
+            if (inputStream != null) {
+                this.imagemEfeito = ImageIO.read(inputStream);
+                inputStream.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar imagem: " + e.getMessage());
+            criarImagemFallback();
         }
-    } catch (Exception e) {
-        System.err.println("Erro ao carregar imagem: " + e.getMessage());
-        criarImagemFallback();
     }
-}
+
+    public void coletarAlma() {
+        almasColetadas++;
+        ativarEfeitoAlma();
+        System.out.println(getNome() + " coletou uma alma! Total: " + almasColetadas);
+    }
+
+    public void ativarEfeitoAlma() {
+        if (imagemEfeito != null) {
+            this.imagem = imagemEfeito;
+
+            if (timerEfeito != null) {
+                timerEfeito.cancel();
+            }
+
+            timerEfeito = new Timer();
+            timerEfeito.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    imagem = imagemOriginal;
+                }
+            }, 5000);
+        }
+    }
 
     private void criarImagemFallback() {
         this.imagem = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
@@ -43,29 +76,48 @@ public class God extends Personagem {
         g.dispose();
     }
 
-    public void verificarFinalDaFase(Fase fase) {
-        // Se chegou no final direito da tela
-        if (this.getX() >= fase.getWidth() - 100) {
-            if (!morto) {
-                this.setVida(Math.min(100, this.getVida() + 20)); // Recupera 20 de vida
-                System.out.println(this.getNome() + " chegou ao final e recuperou vida!");
-                
-                // Ativa efeito visual de proximidade se existir
-                if (imagemProxima != null) {
-                    this.imagem = imagemProxima;
-                }
-            }
+    public void verificarBordas(Fase fase) {
+        // Se atingiu a borda esquerda
+        if (this.getX() <= 0) {
+            this.setX(0);
+            System.out.println("Borda esquerda atingida!");
         }
-        
-        // Se morreu
-        if (this.getVida() <= 0 && !morto) {
-            morrer();
+
+        // Se atingiu a borda direita
+        if (this.getX() >= fase.getWidth() - 50) {
+            this.setX(fase.getWidth() - 50);
+            System.out.println("Borda direita atingida!");
+        }
+
+        // Se atingiu a borda superior
+        if (this.getY() <= 0) {
+            this.setY(0);
+            System.out.println("Borda superior atingida!");
+        }
+
+        // Se atingiu a borda inferior
+        if (this.getY() >= fase.getHeight() - 50) {
+            this.setY(fase.getHeight() - 50);
+            System.out.println("Borda inferior atingida!");
         }
     }
+    // Adicionar verificação de bordas no método verificarFinalDaFase
 
-    private void morrer() {
+   public void vitoria() {
+    // Cria uma imagem verde para representar a vitória
+    BufferedImage imgVitoria = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
+    var g = imgVitoria.createGraphics();
+    g.setColor(Color.GREEN);
+    g.fillRect(0, 0, 50, 50);
+    g.dispose();
+    this.imagem = imgVitoria;
+    
+    System.out.println(getNome() + " coletou todas as almas! Vitória!");
+}
+
+    public void morrer() {
         morto = true;
-        // Cria uma imagem branca
+        // Cria uma imagem branca para representar a morte
         BufferedImage imgBranca = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
         var g = imgBranca.createGraphics();
         g.setColor(Color.WHITE);
@@ -82,10 +134,7 @@ public class God extends Personagem {
         return morto;
     }
 
-    @Override
-    public void atacar(Personagem alvo) {
-        if (morto) return;
-        
-        super.atacar(alvo);
+    public int getAlmasColetadas() {
+        return almasColetadas;
     }
 }
