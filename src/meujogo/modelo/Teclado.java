@@ -12,24 +12,18 @@ public class Teclado implements KeyListener {
     
     @Override
     public void keyPressed(KeyEvent e) {
-        Personagem jogador = fase.getPersonagens().get(0); // Primeiro personagem é o jogador
+        if (fase.getPersonagens().isEmpty()) return;
+        
+        Personagem jogador = fase.getPersonagens().get(0);
         
         switch(e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                jogador.setX(jogador.getX() - 5);
-                break;
-            case KeyEvent.VK_RIGHT:
-                jogador.setX(jogador.getX() + 5);
-                break;
-            case KeyEvent.VK_UP:
-                jogador.setY(jogador.getY() - 5);
-                break;
-            case KeyEvent.VK_DOWN:
-                jogador.setY(jogador.getY() + 5);
-                break;
+            case KeyEvent.VK_LEFT: jogador.setX(jogador.getX() - 5); break;
+            case KeyEvent.VK_RIGHT: jogador.setX(jogador.getX() + 5); break;
+            case KeyEvent.VK_UP: jogador.setY(jogador.getY() - 5); break;
+            case KeyEvent.VK_DOWN: jogador.setY(jogador.getY() + 5); break;
         }
         
-        fase.repaint(); // Redesenha a tela
+        fase.repaint();
     }
     
     @Override public void keyTyped(KeyEvent e) {}

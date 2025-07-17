@@ -2,17 +2,22 @@ package meujogo;
 
 import javax.swing.JFrame;
 import meujogo.modelo.Fase;
-import meujogo.modelo.Personagem;
+import meujogo.modelo.God;
+import meujogo.modelo.Teclado;
 
 public class Container extends JFrame {
     public Container() {
-        Fase fase = new Fase(); // Cria uma nova fase
-        // Adiciona personagens à fase
-        fase.getPersonagens().add(new Personagem("god", 100, 15, 5));
-        fase.getPersonagens().add(new Personagem("EstelaMorta", 80, 10, 8));
+        Fase fase = new Fase();
         
-        add(fase); // Adiciona o painel do jogo
-        
+        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, 30, 20, "god.png");
+        deus.setX(100);
+        deus.setY(100);
+        fase.getPersonagens().add(deus);
+
+        addKeyListener(new Teclado(fase));
+        setFocusable(true);
+        add(fase);
+
         setTitle("Jogo Beta Em Java");
         setSize(1200, 708);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
