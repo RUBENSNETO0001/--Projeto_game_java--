@@ -17,12 +17,11 @@ public class Cometa {
         this.y = y;
         this.velocidade = velocidade;
         this.ativo = true;
-        carregarImagem(caminhoImagem);
     }
 
-    private void carregarImagem(String caminhoImagem) {
+    private void carregarImagem() {
         try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/cometas/" + caminhoImagem);
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/cometas/cometa.png");
             if (inputStream != null) {
                 this.imagem = ImageIO.read(inputStream);
                 inputStream.close();

@@ -63,7 +63,7 @@ public class Fase extends JPanel {
     private void spawnCometa() {
         int y = random.nextInt(getHeight() - 100) + 50;
         int velocidade = random.nextInt(15) + 3;
-        String[] imagens = {"cometa1.png"};
+        String[] imagens = {"cometa.png"};
         String img = imagens[random.nextInt(imagens.length)];
         cometas.add(new Cometa(getWidth(), y, velocidade, img));
     }
