@@ -17,14 +17,17 @@ public class Cometa {
         this.y = y;
         this.velocidade = velocidade;
         this.ativo = true;
+        carregarImagem(caminhoImagem);
     }
 
-    private void carregarImagem() {
+    private void carregarImagem(String caminhoImagem) {
         try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/cometas/cometa.png");
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/cometas/" + caminhoImagem);
             if (inputStream != null) {
                 this.imagem = ImageIO.read(inputStream);
                 inputStream.close();
+            } else {
+                System.err.println("Arquivo não encontrado: res/cometas/" + caminhoImagem);
             }
         } catch (Exception e) {
             System.err.println("Erro ao carregar imagem do cometa: " + e.getMessage());

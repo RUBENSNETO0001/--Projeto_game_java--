@@ -26,11 +26,11 @@ public class Teclado implements KeyListener {
         }
         
         // Verifica limites da tela
-        if (novaX >= 0 && novaX <= fase.getWidth() - 50) {  // 50 é a largura do personagem
+        if (novaX >= 0 && novaX <= fase.getWidth() - 50) {
             jogador.setX(novaX);
         }
         
-        if (novaY >= 0 && novaY <= fase.getHeight() - 50) {  // 50 é a altura do personagem
+        if (novaY >= 0 && novaY <= fase.getHeight() - 50) {
             jogador.setY(novaY);
         }
         

@@ -21,7 +21,6 @@ public class Personagem implements Serializable {
         this.y = y;
     }
 
-    // Getters e Setters
     public int getX() { return x; }
     public void setX(int x) { this.x = x; }
     public int getY() { return y; }

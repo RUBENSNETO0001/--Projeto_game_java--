@@ -15,7 +15,7 @@ public class Container extends JFrame {
     public Container() {
         fase = new Fase();
 
-        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "god.png");
+        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
@@ -24,7 +24,7 @@ public class Container extends JFrame {
         setFocusable(true);
         add(fase);
 
-        setTitle("Jogo Beta Em Java - Cometas Assassinos");
+        setTitle("God Game");
         setSize(1200, 708);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -60,12 +60,12 @@ public class Container extends JFrame {
             "Parabéns! Você coletou todas as almas!\nVocê venceu o jogo!", 
             "Vitória", 
             JOptionPane.INFORMATION_MESSAGE);
-        reiniciarJogo();
+        System.exit(0);
     }
 
     private void gameOver() {
         gameLoop.stop();
-        JOptionPane.showMessageDialog(this, "Game Over! O cometa te pegou!", "Fim de Jogo", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Game Over! O cometa te matou!", "Fim de Jogo", JOptionPane.INFORMATION_MESSAGE);
         int resposta = JOptionPane.showConfirmDialog(this, "Deseja jogar novamente?", "Reiniciar", JOptionPane.YES_NO_OPTION);
         if (resposta == JOptionPane.YES_OPTION) {
             reiniciarJogo();
@@ -77,7 +77,7 @@ public class Container extends JFrame {
     private void reiniciarJogo() {
         getContentPane().removeAll();
         fase = new Fase();
-        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "god.png");
+        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);

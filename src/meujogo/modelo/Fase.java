@@ -5,11 +5,9 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
-
 import javax.swing.*;
 
 public class Fase extends JPanel {
-
     private Image background;
     private List<Personagem> personagens;
     private List<Alma> almas;
@@ -17,7 +15,6 @@ public class Fase extends JPanel {
     private Random random;
     private Timer timerCometas;
     private boolean jogoAtivo;
-    private Image imagemAleatoria;
 
     public Fase() {
         personagens = new ArrayList<>();
@@ -78,7 +75,9 @@ public class Fase extends JPanel {
     }
 
     public void atualizar() {
-        if (todasAlmasColetadas() && jogoAtivo) {
+        if (!jogoAtivo) return;
+
+        if (todasAlmasColetadas()) {
             jogoAtivo = false;
             for (Personagem p : personagens) {
                 if (p instanceof God) {
@@ -103,6 +102,13 @@ public class Fase extends JPanel {
 
             if (!cometa.isAtivo()) {
                 it.remove();
+            }
+        }
+
+        for (Personagem p : personagens) {
+            if (p instanceof God) {
+                verificarColisaoComAlmas((God) p);
+                ((God) p).verificarBordas(this);
             }
         }
 
@@ -138,14 +144,6 @@ public class Fase extends JPanel {
         }
 
         for (Personagem p : personagens) {
-            if (imagemAleatoria != null) {
-                // Desenha a imagem aleatória no centro da tela
-                int largura = 100;
-                int altura = 100;
-                int x = (getWidth() - largura) / 2;
-                int y = (getHeight() - altura) / 2;
-                grafico.drawImage(imagemAleatoria, x, y, largura, altura, this);
-            }
             desenharPersonagem(grafico, p);
         }
     }

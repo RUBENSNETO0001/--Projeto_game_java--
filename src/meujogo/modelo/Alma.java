@@ -16,20 +16,19 @@ public class Alma {
     }
 
     private void carregarImagem(String caminhoImagem) {
-    try {
-        // Corrigir o caminho removendo "alma.png" concatenado
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/almas/" + caminhoImagem);
-        if (inputStream != null) {
-            this.imagem = ImageIO.read(inputStream);
-            inputStream.close();
-        } else {
-            System.err.println("Arquivo não encontrado: res/almas/" + caminhoImagem);
+        try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/almas/" + caminhoImagem);
+            if (inputStream != null) {
+                this.imagem = ImageIO.read(inputStream);
+                inputStream.close();
+            } else {
+                System.err.println("Arquivo não encontrado: res/almas/" + caminhoImagem);
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar imagem da alma: " + e.getMessage());
+            this.imagem = null;
         }
-    } catch (Exception e) {
-        System.err.println("Erro ao carregar imagem da alma: " + e.getMessage());
-        this.imagem = null;
     }
-}
 
     public BufferedImage getImagem() {
         return imagem;
