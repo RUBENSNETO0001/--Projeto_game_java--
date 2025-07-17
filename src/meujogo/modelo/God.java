@@ -1,80 +1,91 @@
 package meujogo.modelo;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 
 public class God extends Personagem {
     private BufferedImage imagem;
+    private BufferedImage imagemOriginal;
+    private BufferedImage imagemProxima;
+    private boolean morto = false;
 
     public God(String nome, int vida, int ataque, int defesa, String caminhoImagem) {
         super(nome, vida, ataque, defesa);
-        carregarImagem(caminhoImagem);
+        carregarImagens(caminhoImagem);
     }
 
-    private void carregarImagem(String caminhoImagem) {
-        try {
-            this.imagem = ImageIO.read(getClass().getResource("/res/persona/posseParado.jpeg" + caminhoImagem));
-        } catch (IOException | IllegalArgumentException e) {
-            System.err.println("Erro ao carregar a imagem: " + e.getMessage());
-            this.imagem = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
-            var g = imagem.createGraphics();
-            g.setColor(Color.RED);
-            g.fillRect(0, 0, 50, 50);
-            g.dispose();
+    private void carregarImagens(String caminhoImagem) {
+    try {
+        // Método alternativo usando ClassLoader
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/persona/" + caminhoImagem);
+        if (inputStream != null) {
+            this.imagemOriginal = ImageIO.read(inputStream);
+            this.imagem = imagemOriginal;
+            inputStream.close();
+        } else {
+            throw new IOException("Arquivo não encontrado: res/persona/" + caminhoImagem);
         }
+    } catch (Exception e) {
+        System.err.println("Erro ao carregar imagem: " + e.getMessage());
+        criarImagemFallback();
+    }
+}
+
+    private void criarImagemFallback() {
+        this.imagem = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
+        var g = imagem.createGraphics();
+        g.setColor(Color.RED);
+        g.fillRect(0, 0, 50, 50);
+        g.dispose();
+    }
+
+    public void verificarFinalDaFase(Fase fase) {
+        // Se chegou no final direito da tela
+        if (this.getX() >= fase.getWidth() - 100) {
+            if (!morto) {
+                this.setVida(Math.min(100, this.getVida() + 20)); // Recupera 20 de vida
+                System.out.println(this.getNome() + " chegou ao final e recuperou vida!");
+                
+                // Ativa efeito visual de proximidade se existir
+                if (imagemProxima != null) {
+                    this.imagem = imagemProxima;
+                }
+            }
+        }
+        
+        // Se morreu
+        if (this.getVida() <= 0 && !morto) {
+            morrer();
+        }
+    }
+
+    private void morrer() {
+        morto = true;
+        // Cria uma imagem branca
+        BufferedImage imgBranca = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
+        var g = imgBranca.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, 50, 50);
+        g.dispose();
+        this.imagem = imgBranca;
     }
 
     public BufferedImage getImagem() {
         return imagem;
     }
 
+    public boolean isMorto() {
+        return morto;
+    }
+
     @Override
-public void atacar(Personagem alvo) {
-    // Garante que o alvo está vivo
-    if (!alvo.estaVivo()) {
-        System.out.println(alvo.getNome() + " já está derrotado!");
-        return;
+    public void atacar(Personagem alvo) {
+        if (morto) return;
+        
+        super.atacar(alvo);
     }
-
-    int dano = this.getAtaque() - (alvo.getDefesa() / 2);
-    dano = Math.max(dano, 1); // Garante pelo menos 1 de dano
-    
-    alvo.setVida(alvo.getVida() - dano);
-    System.out.println(this.getNome() + " atacou " + alvo.getNome() + " causando " + dano + " de dano.");
-
-    // Verifica se derrotou o alvo
-    if (!alvo.estaVivo()) {
-        System.out.println(alvo.getNome() + " foi derrotado!");
-        this.ganharExperiencia(30); // Ganha XP por derrotar inimigo
-    }
-}
-
-public void defender(int dano) {
-    int danoReduzido = Math.max(dano - (this.getDefesa() / 2), 0);
-    this.setVida(this.getVida() - danoReduzido);
-    
-    if (danoReduzido > 0) {
-        System.out.println(this.getNome() + " recebeu " + danoReduzido + " de dano.");
-    } else {
-        System.out.println(this.getNome() + " se defendeu completamente do ataque.");
-    }
-}
-
-public void ganharExperiencia(int pontos) {
-    this.experiencia += pontos;
-    System.out.println(this.getNome() + " ganhou " + pontos + " pontos de experiência!");
-    
-    int xpNecessario = this.getNivel() * 100;
-    if (this.getExperiencia() >= xpNecessario) {
-        this.nivel++;
-        this.ataque += 5;
-        this.defesa += 3;
-        this.vida += 20;
-        this.experiencia -= xpNecessario;
-        System.out.println("⭐ " + this.getNome() + " subiu para o nível " + this.getNivel() + "!");
-        System.out.println("   Ataque: +5 | Defesa: +3 | Vida: +20");
-    }
-}
 }

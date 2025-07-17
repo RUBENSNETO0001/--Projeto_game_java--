@@ -16,14 +16,13 @@ public class Fase extends JPanel {
 
     public Fase() {
         personagens = new ArrayList<>();
+        setBackground(Color.BLACK);
         
-        java.net.URL imgURL = getClass().getResource("/res/background/background.jpeg");
-        if (imgURL != null) {
-            background = new ImageIcon(imgURL).getImage();
-        } else {
-            System.err.println("Erro: Imagem de fundo não encontrada!");
+        try {
+            background = new ImageIcon(getClass().getResource("/res/background/background.jpeg")).getImage();
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar background: " + e.getMessage());
             background = null;
-            setBackground(Color.BLACK);
         }
     }
 
@@ -36,11 +35,17 @@ public class Fase extends JPanel {
         super.paintComponent(g);
         Graphics2D grafico = (Graphics2D) g;
         
+        // Desenha background
         if (background != null) {
             grafico.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         }
         
+        // Desenha personagens
         for (Personagem p : personagens) {
+            if (p instanceof God) {
+                God god = (God) p;
+                god.verificarFinalDaFase(this);
+            }
             desenharPersonagem(grafico, p);
         }
     }
@@ -57,11 +62,13 @@ public class Fase extends JPanel {
             g.fillRect(p.getX(), p.getY(), 50, 50);
         }
         
+        // Barra de vida
         g.setColor(Color.RED);
         g.fillRect(p.getX(), p.getY() - 10, 50, 5);
         g.setColor(Color.GREEN);
         g.fillRect(p.getX(), p.getY() - 10, (int)(50 * ((double)p.getVida()/100)), 5);
         
+        // Nome
         g.setColor(Color.WHITE);
         g.drawString(p.getNome(), p.getX(), p.getY() - 15);
     }
