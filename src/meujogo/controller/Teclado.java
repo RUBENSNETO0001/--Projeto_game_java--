@@ -1,7 +1,10 @@
-package meujogo.modelo;
+package meujogo.controller;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import meujogo.fase.Fase;
+import meujogo.modelo.Personagem;
 
 public class Teclado implements KeyListener {
     private Fase fase;

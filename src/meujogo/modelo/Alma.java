@@ -47,6 +47,7 @@ public class Alma {
     }
 
     public void setColetada(boolean coletada) {
+        getClass().getClassLoader().getResourceAsStream("res/persona/posse_pegandoaAlma.png");
         this.coletada = coletada;
     }
 }

@@ -1,4 +1,4 @@
-package meujogo.modelo;
+package meujogo.fase;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -6,6 +6,11 @@ import java.util.*;
 import java.util.List;
 import java.util.Timer;
 import javax.swing.*;
+
+import meujogo.modelo.Alma;
+import meujogo.modelo.Cometa;
+import meujogo.modelo.God;
+import meujogo.modelo.Personagem;
 
 public class Fase extends JPanel {
     private Image background;
@@ -170,11 +175,6 @@ public class Fase extends JPanel {
                 g.drawImage(img, p.getX(), p.getY(), 50, 50, null);
             }
         }
-
-        g.setColor(Color.RED);
-        g.fillRect(p.getX(), p.getY() - 10, 50, 5);
-        g.setColor(Color.GREEN);
-        g.fillRect(p.getX(), p.getY() - 10, (int) (50 * ((double) p.getVida() / 100)), 5);
 
         g.setColor(Color.WHITE);
         g.drawString(p.getNome(), p.getX(), p.getY() - 15);

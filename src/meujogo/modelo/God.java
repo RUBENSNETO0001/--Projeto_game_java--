@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+
+import meujogo.fase.Fase;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,8 +18,8 @@ public class God extends Personagem {
     private Timer timerEfeito;
     private int almasColetadas = 0;
 
-    public God(String nome, int vida, String caminhoImagem) {
-        super(nome, vida);
+    public God(String nome, String caminhoImagem) {
+        super(nome, 0, 0);
         carregarImagens(caminhoImagem);
     }
 

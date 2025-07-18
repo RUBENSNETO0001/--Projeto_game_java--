@@ -3,10 +3,11 @@ package meujogo;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import meujogo.modelo.Fase;
+
+import meujogo.controller.Teclado;
+import meujogo.fase.Fase;
 import meujogo.modelo.God;
 import meujogo.modelo.Personagem;
-import meujogo.modelo.Teclado;
 
 public class Container extends JFrame {
     private Fase fase;
@@ -15,7 +16,7 @@ public class Container extends JFrame {
     public Container() {
         fase = new Fase();
 
-        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "posseprincipal.png");
+        God deus = new God("─═  𝔤𝔬𝔡 ═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
@@ -77,7 +78,7 @@ public class Container extends JFrame {
     private void reiniciarJogo() {
         getContentPane().removeAll();
         fase = new Fase();
-        God deus = new God("─═  𝔤𝔬𝔡 ═─", 100, "posseprincipal.png");
+        God deus = new God("─═𝔤𝔬𝔡═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
