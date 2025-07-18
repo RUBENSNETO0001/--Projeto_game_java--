@@ -22,10 +22,10 @@ public class Teclado implements KeyListener {
         int novaY = jogador.getY();
         
         switch(e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:  novaX -= 5; break;
-            case KeyEvent.VK_RIGHT: novaX += 5; break;
-            case KeyEvent.VK_UP:    novaY -= 5; break;
-            case KeyEvent.VK_DOWN:  novaY += 5; break;
+            case KeyEvent.VK_LEFT:  novaX -= 7; break;
+            case KeyEvent.VK_RIGHT: novaX += 7; break;
+            case KeyEvent.VK_UP:    novaY -= 7; break;
+            case KeyEvent.VK_DOWN:  novaY += 7; break;
         }
         
         // Verifica limites da tela

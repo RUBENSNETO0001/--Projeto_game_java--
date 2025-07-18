@@ -25,7 +25,9 @@ public class GameEntryScreen extends JFrame {
         startButton.addActionListener(e -> {
             try {
                 dispose();
-                new Container();
+                VideoPlayer.launchVideo(() -> {
+                    SwingUtilities.invokeLater(() -> new Container());
+                });
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null,
