@@ -13,6 +13,7 @@ import meujogo.modelo.God;
 import meujogo.modelo.Personagem;
 
 public class Fase extends JPanel {
+
     private Image background;
     private List<Personagem> personagens;
     private List<Alma> almas;
@@ -80,7 +81,9 @@ public class Fase extends JPanel {
     }
 
     public void atualizar() {
-        if (!jogoAtivo) return;
+        if (!jogoAtivo) {
+            return;
+        }
 
         if (todasAlmasColetadas()) {
             jogoAtivo = false;
@@ -151,6 +154,10 @@ public class Fase extends JPanel {
         for (Personagem p : personagens) {
             desenharPersonagem(grafico, p);
         }
+    }
+
+    public boolean isJogoAtivo() {
+        return jogoAtivo;
     }
 
     private void verificarColisaoComAlmas(God god) {

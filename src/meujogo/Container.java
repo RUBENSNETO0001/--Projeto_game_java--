@@ -22,9 +22,14 @@ public class Container extends JFrame {
         fase.getPersonagens().add(deus);
 
         addKeyListener(new Teclado(fase));
-        setFocusable(true);
-        add(fase);
-
+        addKeyListener(new Teclado(fase));
+    add(fase);
+    
+    // Configuração de foco corrigida:
+    setFocusable(true);
+    fase.setFocusable(false);  // O painel não deve roubar o foco
+    requestFocusInWindow();    // Garante que o JFrame tenha foco
+    
         setTitle("God Game");
         setSize(1200, 708);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

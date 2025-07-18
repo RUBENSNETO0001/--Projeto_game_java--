@@ -15,7 +15,7 @@ public class Teclado implements KeyListener {
     
     @Override
     public void keyPressed(KeyEvent e) {
-        if (fase.getPersonagens().isEmpty()) return;
+        if (fase.getPersonagens().isEmpty() || !fase.isJogoAtivo()) return;
 
         Personagem jogador = fase.getPersonagens().get(0);
         int novaX = jogador.getX();
