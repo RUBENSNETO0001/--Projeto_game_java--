@@ -22,7 +22,6 @@ public class Container extends JFrame {
         fase.getPersonagens().add(deus);
 
         addKeyListener(new Teclado(fase));
-        addKeyListener(new Teclado(fase));
     add(fase);
     
     // Configuração de foco corrigida:

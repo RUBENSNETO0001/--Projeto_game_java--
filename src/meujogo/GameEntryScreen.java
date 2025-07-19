@@ -1,9 +1,7 @@
 package meujogo;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class GameEntryScreen extends JFrame {
 
@@ -23,17 +21,11 @@ public class GameEntryScreen extends JFrame {
 
         JButton startButton = createStyledButton("Começar Jogo");
         startButton.addActionListener(e -> {
-            try {
-                dispose();
-                VideoPlayer.launchVideo(() -> {
-                    SwingUtilities.invokeLater(() -> new Container());
-                });
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null,
-                        "Erro ao iniciar jogo: " + ex.getMessage(),
-                        "Erro", JOptionPane.ERROR_MESSAGE);
-            }
+            dispose();
+            String videoPath = "res/vid/essa_e_a_tal_da_wav_intro.mp4";
+            VLCJVideoPlayer.launchVideo(videoPath, () -> {
+                SwingUtilities.invokeLater(() -> new Container());
+            });
         });
 
         JButton exitButton = createStyledButton("Sair");
@@ -72,6 +64,7 @@ public class GameEntryScreen extends JFrame {
     }
 
     class BackgroundPanel extends JPanel {
+
         private Image backgroundImage;
 
         public BackgroundPanel(String imagePath) {
