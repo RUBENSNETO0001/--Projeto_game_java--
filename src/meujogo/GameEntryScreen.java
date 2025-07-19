@@ -20,13 +20,18 @@ public class GameEntryScreen extends JFrame {
         buttonPanel.setOpaque(false);
 
         JButton startButton = createStyledButton("Começar Jogo");
-        startButton.addActionListener(e -> {
-            dispose();
-            String videoPath = "res/vid/essa_e_a_tal_da_wav_intro.mp4";
-            VLCJVideoPlayer.launchVideo(videoPath, () -> {
-                SwingUtilities.invokeLater(() -> new Container());
-            });
+       startButton.addActionListener(e -> {
+    dispose();
+    try {
+        VLCJVideoPlayer.launchVideo("intro.mp4", () -> {
+            SwingUtilities.invokeLater(() -> new Container());
         });
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        // Fallback direto para o jogo se houver erro
+        new Container().setVisible(true);
+    }
+});
 
         JButton exitButton = createStyledButton("Sair");
         exitButton.addActionListener(e -> System.exit(0));
