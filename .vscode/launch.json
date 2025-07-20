@@ -16,6 +16,18 @@
             "request": "launch",
             "mainClass": "meujogo.Container",
             "projectName": "Meu_jogo"
+        },
+        {
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch GameEntryScreen",
+            "request": "launch",
+            "mainClass": "meujogo.GameEntryScreen",
+            "vmArgs": "-Djava.library.path=\"C:/Program Files/VideoLAN/VLC\""
         }
+    ]
+}
     ]
 }

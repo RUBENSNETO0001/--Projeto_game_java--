@@ -1,14 +1,15 @@
 package meujogo;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.*;
 
 public class GameEntryScreen extends JFrame {
 
     public GameEntryScreen() {
+        initUI();
+    }
+
+    private void initUI() {
         setTitle("Home - Entrada do Jogo");
         setSize(1200, 708);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,21 +24,7 @@ public class GameEntryScreen extends JFrame {
         buttonPanel.setOpaque(false);
 
         JButton startButton = createStyledButton("Começar Jogo");
-        // GameEntryScreen.java - parte modificada do método de ação do botão
-        startButton.addActionListener(e -> {
-            dispose();
-            try {
-                // Versão corrigida da chamada
-                meujogo.VLCJVideoPlayer.playVideo(
-                        "/res/vid/inicio.mp4",
-                        () -> SwingUtilities.invokeLater(() -> new Container().setVisible(true))
-                );
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                // Fallback direto para o jogo
-                new Container().setVisible(true);
-            }
-        });
+        startButton.addActionListener(e -> startGame());
 
         JButton exitButton = createStyledButton("Sair");
         exitButton.addActionListener(e -> System.exit(0));
@@ -50,6 +37,13 @@ public class GameEntryScreen extends JFrame {
         setVisible(true);
     }
 
+    private void startGame() {
+        dispose();
+        VLCJVideoPlayer.playVideo("/res/vid/inicio.mp4", () -> {
+            SwingUtilities.invokeLater(() -> new Container());
+        });
+    }
+
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.BOLD, 24));
@@ -57,7 +51,6 @@ public class GameEntryScreen extends JFrame {
         button.setBackground(new Color(70, 130, 180, 200));
         button.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
         button.setFocusPainted(false);
-        button.setRequestFocusEnabled(false);
         button.setFocusable(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -75,16 +68,12 @@ public class GameEntryScreen extends JFrame {
     }
 
     class BackgroundPanel extends JPanel {
-
         private Image backgroundImage;
 
         public BackgroundPanel(String imagePath) {
             try {
                 backgroundImage = new ImageIcon(getClass().getResource(imagePath)).getImage();
             } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Erro ao carregar imagem: " + e.getMessage(),
-                        "Erro", JOptionPane.ERROR_MESSAGE);
                 backgroundImage = null;
             }
         }
@@ -102,8 +91,6 @@ public class GameEntryScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new GameEntryScreen();
-        });
+        SwingUtilities.invokeLater(() -> new GameEntryScreen());
     }
 }

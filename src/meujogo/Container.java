@@ -7,56 +7,54 @@ import java.awt.event.ActionListener;
 import meujogo.controller.Teclado;
 import meujogo.fase.Fase;
 import meujogo.modelo.God;
-import meujogo.modelo.Personagem;
 
 public class Container extends JFrame {
     private Fase fase;
     private Timer gameLoop;
 
     public Container() {
-        fase = new Fase();
+        initGame();
+    }
 
-        God deus = new God("─═  𝔤𝔬𝔡 ═─", "posseprincipal.png");
-        deus.setX(100);
-        deus.setY(100);
-        fase.getPersonagens().add(deus);
-
-        addKeyListener(new Teclado(fase));
-    add(fase);
-    
-    // Configuração de foco corrigida:
-    setFocusable(true);
-    fase.setFocusable(false);  // O painel não deve roubar o foco
-    requestFocusInWindow();    // Garante que o JFrame tenha foco
-    
+    private void initGame() {
         setTitle("God Game");
         setSize(1200, 708);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-        setVisible(true);
 
-        // Game loop
-        gameLoop = new Timer(16, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (fase.todasAlmasColetadas()) {
-                    vitoria();
-                    return;
-                }
-                fase.atualizar();
-                
-                for (Personagem p : fase.getPersonagens()) {
-                    if (p instanceof God && ((God)p).isMorto()) {
-                        gameOver();
-                        break;
-                    }
-                }
-            }
-        });
-        gameLoop.start();
+        fase = new Fase();
+        God deus = new God("─═─", "posseprincipal.png");
+        deus.setX(100);
+        deus.setY(100);
+        fase.getPersonagens().add(deus);
+
+        add(fase);
+        addKeyListener(new Teclado(fase));
+        
         fase.setFocusable(true);
         fase.requestFocusInWindow();
+
+        gameLoop = new Timer(16, this::updateGame);
+        gameLoop.start();
+        
+        setVisible(true);
+    }
+
+    private void updateGame(ActionEvent e) {
+        if (fase.todasAlmasColetadas()) {
+            vitoria();
+            return;
+        }
+        
+        fase.atualizar();
+        
+        for (var p : fase.getPersonagens()) {
+            if (p instanceof God && ((God)p).isMorto()) {
+                gameOver();
+                break;
+            }
+        }
     }
 
     private void vitoria() {
@@ -65,36 +63,47 @@ public class Container extends JFrame {
             "Parabéns! Você coletou todas as almas!\nVocê venceu o jogo!", 
             "Vitória", 
             JOptionPane.INFORMATION_MESSAGE);
-        System.exit(0);
+        restartApplication();
     }
 
     private void gameOver() {
         gameLoop.stop();
-        JOptionPane.showMessageDialog(this, "Game Over! O cometa te matou!", "Fim de Jogo", JOptionPane.INFORMATION_MESSAGE);
-        int resposta = JOptionPane.showConfirmDialog(this, "Deseja jogar novamente?", "Reiniciar", JOptionPane.YES_NO_OPTION);
+        int resposta = JOptionPane.showConfirmDialog(this, 
+            "Game Over! O cometa te matou!\nDeseja jogar novamente?", 
+            "Fim de Jogo", 
+            JOptionPane.YES_NO_OPTION);
+        
         if (resposta == JOptionPane.YES_OPTION) {
-            reiniciarJogo();
+            restartGame();
         } else {
-            System.exit(0);
+            restartApplication();
         }
     }
 
-    private void reiniciarJogo() {
+    private void restartGame() {
         getContentPane().removeAll();
         fase = new Fase();
-        God deus = new God("─═𝔤𝔬𝔡═─", "posseprincipal.png");
+        God deus = new God("─═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
 
-        addKeyListener(new Teclado(fase));
         add(fase);
+        addKeyListener(new Teclado(fase));
+        fase.setFocusable(true);
+        fase.requestFocusInWindow();
+        
         revalidate();
         repaint();
         gameLoop.start();
     }
 
+    private void restartApplication() {
+        dispose();
+        new GameEntryScreen();
+    }
+
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> new Container());
+        SwingUtilities.invokeLater(() -> new Container());
     }
 }
