@@ -1,6 +1,9 @@
 package meujogo;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 
 public class GameEntryScreen extends JFrame {
@@ -20,18 +23,21 @@ public class GameEntryScreen extends JFrame {
         buttonPanel.setOpaque(false);
 
         JButton startButton = createStyledButton("Começar Jogo");
-       startButton.addActionListener(e -> {
-    dispose();
-    try {
-        VLCJVideoPlayer.launchVideo("intro.mp4", () -> {
-            SwingUtilities.invokeLater(() -> new Container());
+        // GameEntryScreen.java - parte modificada do método de ação do botão
+        startButton.addActionListener(e -> {
+            dispose();
+            try {
+                // Versão corrigida da chamada
+                meujogo.VLCJVideoPlayer.playVideo(
+                        "/res/vid/inicio.mp4",
+                        () -> SwingUtilities.invokeLater(() -> new Container().setVisible(true))
+                );
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                // Fallback direto para o jogo
+                new Container().setVisible(true);
+            }
         });
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        // Fallback direto para o jogo se houver erro
-        new Container().setVisible(true);
-    }
-});
 
         JButton exitButton = createStyledButton("Sair");
         exitButton.addActionListener(e -> System.exit(0));
