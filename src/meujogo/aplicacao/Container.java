@@ -1,9 +1,8 @@
-package meujogo.ui;
+package meujogo.aplicacao;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-import meujogo.aplicacao.HomePrincipal;
 import meujogo.controller.Teclado;
 import meujogo.fase.Fase;
 import meujogo.modelo.Alma;
