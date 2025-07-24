@@ -1,6 +1,9 @@
-package meujogo;
+package meujogo.aplicacao;
 
 import javax.swing.*;
+
+import meujogo.ui.Container;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

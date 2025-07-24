@@ -1,4 +1,4 @@
-package meujogo;
+package meujogo.aplicacao;
 
 import java.awt.Desktop;
 import java.io.File;
