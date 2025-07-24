@@ -3,6 +3,8 @@ package meujogo.modelo;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.io.Serializable;
+
 import javax.imageio.ImageIO;
 
 import meujogo.fase.Fase;
@@ -10,7 +12,8 @@ import meujogo.fase.Fase;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class God extends Personagem {
+public class God extends Personagem implements Serializable {
+    private static final long serialVersionUID = 1L;
     private BufferedImage imagem;
     private BufferedImage imagemOriginal;
     private BufferedImage imagemEfeito;

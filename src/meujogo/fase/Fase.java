@@ -41,6 +41,10 @@ public class Fase extends JPanel {
         iniciarSpawnCometas();
     }
 
+    public List<Alma> getAlmas() {
+        return almas;
+    }
+
     private void criarAlmas() {
         String[] imagensAlmas = {"alma.png"};
         for (int i = 0; i < 5; i++) {

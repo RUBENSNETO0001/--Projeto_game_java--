@@ -2,31 +2,46 @@ package meujogo.controller;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import meujogo.fase.Fase;
 import meujogo.modelo.Personagem;
 
 public class Teclado implements KeyListener {
     private Fase fase;
+    private boolean[] teclasPressionadas = new boolean[256]; // Para controle contínuo
     
     public Teclado(Fase fase) {
         this.fase = fase;
+        // Configurações adicionais para melhor resposta
+        fase.setFocusable(true);
+        fase.requestFocusInWindow();
+        fase.addKeyListener(this);
     }
     
     @Override
     public void keyPressed(KeyEvent e) {
         if (fase.getPersonagens().isEmpty() || !fase.isJogoAtivo()) return;
 
+        teclasPressionadas[e.getKeyCode()] = true;
+        atualizarMovimento();
+    }
+    
+    @Override 
+    public void keyReleased(KeyEvent e) {
+        teclasPressionadas[e.getKeyCode()] = false;
+    }
+    
+    @Override 
+    public void keyTyped(KeyEvent e) {}
+    
+    private void atualizarMovimento() {
         Personagem jogador = fase.getPersonagens().get(0);
         int novaX = jogador.getX();
         int novaY = jogador.getY();
         
-        switch(e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:  novaX -= 7; break;
-            case KeyEvent.VK_RIGHT: novaX += 7; break;
-            case KeyEvent.VK_UP:    novaY -= 7; break;
-            case KeyEvent.VK_DOWN:  novaY += 7; break;
-        }
+        if (teclasPressionadas[KeyEvent.VK_LEFT]) novaX -= 7;
+        if (teclasPressionadas[KeyEvent.VK_RIGHT]) novaX += 7;
+        if (teclasPressionadas[KeyEvent.VK_UP]) novaY -= 7;
+        if (teclasPressionadas[KeyEvent.VK_DOWN]) novaY += 7;
         
         // Verifica limites da tela
         if (novaX >= 0 && novaX <= fase.getWidth() - 50) {
@@ -39,7 +54,4 @@ public class Teclado implements KeyListener {
         
         fase.repaint();
     }
-    
-    @Override public void keyTyped(KeyEvent e) {}
-    @Override public void keyReleased(KeyEvent e) {}
 }

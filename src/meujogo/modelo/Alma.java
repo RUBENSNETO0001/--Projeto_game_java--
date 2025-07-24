@@ -2,11 +2,12 @@ package meujogo.modelo;
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.io.Serializable;
 import javax.imageio.ImageIO;
 
-public class Alma {
+public class Alma implements Serializable {
     private int x, y;
-    private BufferedImage imagem;
+    private transient BufferedImage imagem; // marked as transient as BufferedImage isn't Serializable
     private boolean coletada = false;
 
     public Alma(int x, int y, String caminhoImagem) {
@@ -21,16 +22,12 @@ public class Alma {
             if (inputStream != null) {
                 this.imagem = ImageIO.read(inputStream);
                 inputStream.close();
-            } else {
-                System.err.println("Arquivo não encontrado: res/almas/" + caminhoImagem);
             }
         } catch (Exception e) {
             System.err.println("Erro ao carregar imagem da alma: " + e.getMessage());
-            this.imagem = null;
         }
     }
-
-    public BufferedImage getImagem() {
+ public BufferedImage getImagem() {
         return imagem;
     }
 
@@ -47,7 +44,8 @@ public class Alma {
     }
 
     public void setColetada(boolean coletada) {
-        getClass().getClassLoader().getResourceAsStream("res/persona/posse_pegandoaAlma.png");
-        this.coletada = coletada;
-    }
+    // Esta linha não faz nada e deve ser removida
+    getClass().getClassLoader().getResourceAsStream("res/persona/posse_pegandoaAlma.png");
+    this.coletada = coletada;
+}
 }
