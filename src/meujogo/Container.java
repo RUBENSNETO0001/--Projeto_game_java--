@@ -24,7 +24,7 @@ public class Container extends JFrame {
         setResizable(false);
 
         fase = new Fase();
-        God deus = new God("─═─", "posseprincipal.png");
+        God deus = new God("─═God═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
@@ -83,7 +83,7 @@ public class Container extends JFrame {
     private void restartGame() {
         getContentPane().removeAll();
         fase = new Fase();
-        God deus = new God("─═─", "posseprincipal.png");
+        God deus = new God("─═God═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
@@ -100,7 +100,7 @@ public class Container extends JFrame {
 
     private void restartApplication() {
         dispose();
-        new GameEntryScreen();
+        new HomePrincipal();
     }
 
     public static void main(String[] args) {
