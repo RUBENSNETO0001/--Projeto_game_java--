@@ -71,7 +71,7 @@ public class HomePrincipal extends JFrame {
     }
 
     private void openVideo() {
-        File videoFile = new File("src/res/vid/inicio.mp4");
+        File videoFile = new File("res/vid/inicio.mp4");
 
         if (!Desktop.isDesktopSupported() || !videoFile.exists()) {
             String errorMsg = "Não foi possível abrir o vídeo.";
