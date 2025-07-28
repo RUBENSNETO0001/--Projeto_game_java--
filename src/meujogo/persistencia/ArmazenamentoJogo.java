@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.List;
 
 public class ArmazenamentoJogo {
+
     private static final String DIR_SAVES = "saves";
     private static final String ARQUIVO_SAVE = DIR_SAVES + "/savegame.dat";
 
@@ -20,13 +21,13 @@ public class ArmazenamentoJogo {
             }
 
             File arquivoSave = new File(ARQUIVO_SAVE);
-            
+
             try (ObjectOutputStream out = new ObjectOutputStream(
-                 new FileOutputStream(arquivoSave))) {
+                    new FileOutputStream(arquivoSave))) {
                 DadosJogo dados = new DadosJogo(jogador, almas);
                 out.writeObject(dados);
-                System.out.println("Jogo salvo com sucesso em: " + 
-                                  arquivoSave.getAbsolutePath());
+                System.out.println("Jogo salvo com sucesso em: "
+                        + arquivoSave.getAbsolutePath());
                 return true;
             }
         } catch (IOException e) {
@@ -38,26 +39,26 @@ public class ArmazenamentoJogo {
 
     public static DadosJogo carregarJogo() {
         File arquivo = new File(ARQUIVO_SAVE);
-        
+
         System.out.println("Tentando carregar de: " + arquivo.getAbsolutePath());
-        
+
         if (!arquivo.exists()) {
             System.out.println("Arquivo de save não encontrado.");
             return null;
         }
-        
+
         if (arquivo.length() == 0) {
             System.out.println("Arquivo de save está vazio.");
             return null;
         }
 
         try (ObjectInputStream in = new ObjectInputStream(
-             new BufferedInputStream(new FileInputStream(arquivo)))) {
-            
+                new BufferedInputStream(new FileInputStream(arquivo)))) {
+
             DadosJogo dados = (DadosJogo) in.readObject();
             System.out.println("Jogo carregado com sucesso!");
             return dados;
-            
+
         } catch (EOFException e) {
             System.err.println("Arquivo corrompido (EOF): " + e.getMessage());
         } catch (IOException e) {
@@ -70,7 +71,7 @@ public class ArmazenamentoJogo {
             System.err.println("Erro inesperado ao carregar jogo: " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         return null;
     }
 }
