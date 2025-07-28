@@ -1,12 +1,14 @@
 package meujogo.modelo;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import javax.imageio.ImageIO;
 
 public class Alma implements Serializable {
-    private int x, y;
+    private static final long serialVersionUID = 1L;
+    private final int x, y;
     private transient BufferedImage imagem;
     private boolean coletada = false;
 
@@ -17,17 +19,21 @@ public class Alma implements Serializable {
     }
 
     private void carregarImagem(String caminhoImagem) {
-        try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/almas/" + caminhoImagem);
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/almas/" + caminhoImagem)) {
             if (inputStream != null) {
                 this.imagem = ImageIO.read(inputStream);
-                inputStream.close();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Erro ao carregar imagem da alma: " + e.getMessage());
         }
     }
- public BufferedImage getImagem() {
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        carregarImagem("alma.png");
+    }
+
+    public BufferedImage getImagem() {
         return imagem;
     }
 
@@ -44,8 +50,6 @@ public class Alma implements Serializable {
     }
 
     public void setColetada(boolean coletada) {
-    // Esta linha não faz nada e deve ser removida
-    getClass().getClassLoader().getResourceAsStream("res/persona/posse_pegandoaAlma.png");
-    this.coletada = coletada;
-}
+        this.coletada = coletada;
+    }
 }

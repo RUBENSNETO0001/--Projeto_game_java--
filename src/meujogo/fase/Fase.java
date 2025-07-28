@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
-import java.util.Timer;
 import javax.swing.*;
 
 import meujogo.modelo.Alma;
@@ -13,13 +12,12 @@ import meujogo.modelo.God;
 import meujogo.modelo.Personagem;
 
 public class Fase extends JPanel {
-
-    private Image background;
-    private List<Personagem> personagens;
-    private List<Alma> almas;
-    private List<Cometa> cometas;
-    private Random random;
-    private Timer timerCometas;
+    private transient Image background;
+    private final List<Personagem> personagens;
+    private final List<Alma> almas;
+    private final List<Cometa> cometas;
+    private final Random random;
+    private final Timer timerCometas;
     private boolean jogoAtivo;
 
     public Fase() {
@@ -34,15 +32,15 @@ public class Fase extends JPanel {
             background = new ImageIcon(getClass().getResource("/res/background/background.jpeg")).getImage();
         } catch (Exception e) {
             System.err.println("Erro ao carregar background: " + e.getMessage());
-            background = null;
         }
 
         criarAlmas();
+        timerCometas = new Timer();
         iniciarSpawnCometas();
     }
 
     public List<Alma> getAlmas() {
-        return almas;
+        return Collections.unmodifiableList(almas);
     }
 
     private void criarAlmas() {
@@ -50,13 +48,11 @@ public class Fase extends JPanel {
         for (int i = 0; i < 5; i++) {
             int x = random.nextInt(1000) + 100;
             int y = random.nextInt(500) + 100;
-            String imgAleatoria = imagensAlmas[random.nextInt(imagensAlmas.length)];
-            almas.add(new Alma(x, y, imgAleatoria));
+            almas.add(new Alma(x, y, imagensAlmas[0]));
         }
     }
 
     private void iniciarSpawnCometas() {
-        timerCometas = new Timer();
         timerCometas.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -70,40 +66,31 @@ public class Fase extends JPanel {
     private void spawnCometa() {
         int y = random.nextInt(getHeight() - 100) + 50;
         int velocidade = random.nextInt(15) + 3;
-        String[] imagens = {"cometa.png"};
-        String img = imagens[random.nextInt(imagens.length)];
-        cometas.add(new Cometa(getWidth(), y, velocidade, img));
+        cometas.add(new Cometa(getWidth(), y, velocidade, "cometa.png"));
     }
 
     public boolean todasAlmasColetadas() {
-        for (Alma alma : almas) {
-            if (!alma.isColetada()) {
-                return false;
-            }
-        }
-        return true;
+        return almas.stream().allMatch(Alma::isColetada);
     }
 
     public void atualizar() {
-        if (!jogoAtivo) {
-            return;
-        }
+        if (!jogoAtivo) return;
 
         if (todasAlmasColetadas()) {
-            jogoAtivo = false;
-            for (Personagem p : personagens) {
-                if (p instanceof God) {
-                    ((God) p).vitoria();
-                    break;
-                }
-            }
+            encerrarJogoComVitoria();
             return;
         }
 
-        for (Iterator<Cometa> it = cometas.iterator(); it.hasNext();) {
-            Cometa cometa = it.next();
-            cometa.mover();
+        atualizarCometas();
+        verificarColisoes();
+        repaint();
+    }
 
+    private void atualizarCometas() {
+        cometas.removeIf(cometa -> {
+            cometa.mover();
+            if (!cometa.isAtivo()) return true;
+            
             for (Personagem p : personagens) {
                 if (p instanceof God && cometa.colideCom((God) p)) {
                     ((God) p).morrer();
@@ -111,20 +98,22 @@ public class Fase extends JPanel {
                     break;
                 }
             }
+            return false;
+        });
+    }
 
-            if (!cometa.isAtivo()) {
-                it.remove();
-            }
-        }
+    private void verificarColisoes() {
+        personagens.stream()
+            .filter(p -> p instanceof God)
+            .forEach(p -> verificarColisaoComAlmas((God) p));
+    }
 
-        for (Personagem p : personagens) {
-            if (p instanceof God) {
-                verificarColisaoComAlmas((God) p);
-                ((God) p).verificarBordas(this);
-            }
-        }
-
-        repaint();
+    private void encerrarJogoComVitoria() {
+        jogoAtivo = false;
+        personagens.stream()
+            .filter(p -> p instanceof God)
+            .findFirst()
+            .ifPresent(p -> ((God) p).vitoria());
     }
 
     @Override
@@ -136,46 +125,30 @@ public class Fase extends JPanel {
             grafico.drawImage(background, 0, 0, getWidth(), getHeight(), this);
         }
 
-        for (Alma alma : almas) {
-            if (!alma.isColetada()) {
-                BufferedImage img = alma.getImagem();
-                if (img != null) {
-                    grafico.drawImage(img, alma.getX(), alma.getY(), 30, 30, null);
-                }
-            }
-        }
+        almas.stream()
+            .filter(alma -> !alma.isColetada())
+            .forEach(alma -> desenharAlma(grafico, alma));
 
-        for (Cometa cometa : cometas) {
-            if (cometa.isAtivo()) {
-                BufferedImage img = cometa.getImagem();
-                if (img != null) {
-                    grafico.drawImage(img, cometa.getX(), cometa.getY(),
-                            cometa.getLargura(), cometa.getAltura(), null);
-                }
-            }
-        }
+        cometas.stream()
+            .filter(Cometa::isAtivo)
+            .forEach(cometa -> desenharCometa(grafico, cometa));
 
-        for (Personagem p : personagens) {
-            desenharPersonagem(grafico, p);
+        personagens.forEach(p -> desenharPersonagem(grafico, p));
+    }
+
+    private void desenharAlma(Graphics2D g, Alma alma) {
+        BufferedImage img = alma.getImagem();
+        if (img != null) {
+            g.drawImage(img, alma.getX(), alma.getY(), 30, 30, null);
         }
     }
 
-    public boolean isJogoAtivo() {
-        return jogoAtivo;
-    }
-
-    private void verificarColisaoComAlmas(God god) {
-        for (Alma alma : almas) {
-            if (!alma.isColetada() && colisao(god, alma)) {
-                alma.setColetada(true);
-                god.coletarAlma();
-                break;
-            }
+    private void desenharCometa(Graphics2D g, Cometa cometa) {
+        BufferedImage img = cometa.getImagem();
+        if (img != null) {
+            g.drawImage(img, cometa.getX(), cometa.getY(),
+                    cometa.getLargura(), cometa.getAltura(), null);
         }
-    }
-
-    private boolean colisao(Personagem a, Alma b) {
-        return Math.abs(a.getX() - b.getX()) < 40 && Math.abs(a.getY() - b.getY()) < 40;
     }
 
     private void desenharPersonagem(Graphics2D g, Personagem p) {
@@ -186,12 +159,34 @@ public class Fase extends JPanel {
                 g.drawImage(img, p.getX(), p.getY(), 50, 50, null);
             }
         }
-
         g.setColor(Color.WHITE);
         g.drawString(p.getNome(), p.getX(), p.getY() - 15);
     }
 
+    private void verificarColisaoComAlmas(God god) {
+        almas.stream()
+            .filter(alma -> !alma.isColetada() && colisao(god, alma))
+            .findFirst()
+            .ifPresent(alma -> {
+                alma.setColetada(true);
+                god.coletarAlma();
+            });
+    }
+
+    private boolean colisao(Personagem a, Alma b) {
+        return Math.abs(a.getX() - b.getX()) < 40 && Math.abs(a.getY() - b.getY()) < 40;
+    }
+
+    public boolean isJogoAtivo() {
+        return jogoAtivo;
+    }
+
     public List<Personagem> getPersonagens() {
-        return personagens;
+        return Collections.unmodifiableList(personagens);
+    }
+
+    public void pararJogo() {
+        jogoAtivo = false;
+        timerCometas.cancel();
     }
 }

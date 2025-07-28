@@ -2,8 +2,6 @@ package meujogo.persistencia;
 
 import meujogo.modelo.Alma;
 import meujogo.modelo.God;
-import meujogo.persistencia.DadosJogo;
-
 import java.io.*;
 import java.util.List;
 
@@ -13,20 +11,20 @@ public class ArmazenamentoJogo {
 
     public static boolean salvarJogo(God jogador, List<Alma> almas) {
         try {
-            // Garante que o diretório de saves existe
             File savesDir = new File(DIR_SAVES);
             if (!savesDir.exists()) {
-                savesDir.mkdirs();
+                if (!savesDir.mkdirs()) {
+                    System.err.println("Falha ao criar diretório de saves");
+                    return false;
+                }
             }
 
-            File arquivoSave = new File(ARQUIVO_SAVE);
-            
             try (ObjectOutputStream out = new ObjectOutputStream(
-                 new FileOutputStream(arquivoSave))) {
+                 new FileOutputStream(ARQUIVO_SAVE))) {
                 DadosJogo dados = new DadosJogo(jogador, almas);
                 out.writeObject(dados);
                 System.out.println("Jogo salvo com sucesso em: " + 
-                                  arquivoSave.getAbsolutePath());
+                                  ARQUIVO_SAVE);
                 return true;
             }
         } catch (IOException e) {
@@ -39,15 +37,8 @@ public class ArmazenamentoJogo {
     public static DadosJogo carregarJogo() {
         File arquivo = new File(ARQUIVO_SAVE);
         
-        System.out.println("Tentando carregar de: " + arquivo.getAbsolutePath());
-        
-        if (!arquivo.exists()) {
-            System.out.println("Arquivo de save não encontrado.");
-            return null;
-        }
-        
-        if (arquivo.length() == 0) {
-            System.out.println("Arquivo de save está vazio.");
+        if (!arquivo.exists() || arquivo.length() == 0) {
+            System.out.println("Arquivo de save não encontrado ou vazio");
             return null;
         }
 
@@ -60,14 +51,8 @@ public class ArmazenamentoJogo {
             
         } catch (EOFException e) {
             System.err.println("Arquivo corrompido (EOF): " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("Erro de IO ao carregar jogo: " + e.getMessage());
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            System.err.println("Erro: Classe não encontrada ao carregar jogo");
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("Erro inesperado ao carregar jogo: " + e.getMessage());
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Erro ao carregar jogo: " + e.getMessage());
             e.printStackTrace();
         }
         

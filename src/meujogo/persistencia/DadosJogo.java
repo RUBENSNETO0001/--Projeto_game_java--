@@ -15,7 +15,6 @@ public class DadosJogo implements Serializable {
 
     public DadosJogo(God jogador, List<Alma> almas) {
         this.jogador = Objects.requireNonNull(jogador, "Jogador não pode ser nulo");
-        
         Objects.requireNonNull(almas, "Lista de almas não pode ser nula");
         this.almas = new ArrayList<>(almas);
     }

@@ -3,7 +3,8 @@ package meujogo.modelo;
 import java.io.Serializable;
 
 public class Personagem implements Serializable {
-    private String nome;
+    private static final long serialVersionUID = 1L;
+    private final String nome;
     private int x, y;
 
     public Personagem(String nome) {
@@ -24,10 +25,8 @@ public class Personagem implements Serializable {
     public void setY(int y) { this.y = y; }
     public String getNome() { return nome; }
 
-
-
     @Override
     public String toString() {
-        return String.format("Personagem[nome=%s, vida=%d]", nome);
+        return String.format("Personagem[nome=%s, x=%d, y=%d]", nome, x, y);
     }
 }

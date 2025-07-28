@@ -21,11 +21,9 @@ public class Cometa {
     }
 
     private void carregarImagem(String caminhoImagem) {
-        try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/cometas/" + caminhoImagem);
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/cometas/" + caminhoImagem)) {
             if (inputStream != null) {
                 this.imagem = ImageIO.read(inputStream);
-                inputStream.close();
             } else {
                 System.err.println("Arquivo não encontrado: res/cometas/" + caminhoImagem);
             }

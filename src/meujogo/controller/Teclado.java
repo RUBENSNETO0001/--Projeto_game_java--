@@ -6,12 +6,11 @@ import meujogo.fase.Fase;
 import meujogo.modelo.Personagem;
 
 public class Teclado implements KeyListener {
-    private Fase fase;
-    private boolean[] teclasPressionadas = new boolean[256]; // Para controle contínuo
+    private final Fase fase;
+    private final boolean[] teclasPressionadas = new boolean[256];
     
     public Teclado(Fase fase) {
         this.fase = fase;
-        // Configurações adicionais para melhor resposta
         fase.setFocusable(true);
         fase.requestFocusInWindow();
         fase.addKeyListener(this);
