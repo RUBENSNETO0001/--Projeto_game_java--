@@ -1,9 +1,8 @@
-package meujogo.ui;
+package meujogo.aplicacao;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-import meujogo.aplicacao.HomePrincipal;
 import meujogo.controller.Teclado;
 import meujogo.fase.Fase;
 import meujogo.modelo.Alma;
@@ -23,36 +22,36 @@ public class Container extends JFrame {
     }
 
     private void initGame() {
-    setTitle("God Game");
-    setSize(1200, 708);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setLocationRelativeTo(null);
-    setResizable(false);
+        setTitle("God Game");
+        setSize(1200, 708);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
 
-    // Primeiro cria a fase
-    fase = new Fase();
-    
-    // Depois cria o personagem
-    deus = new God("─═God═─", "posseprincipal.png");
-    deus.setX(100);
-    deus.setY(100);
-    fase.getPersonagens().add(deus);
+        // Primeiro cria a fase
+        fase = new Fase();
 
-    // Adiciona a fase ao container
-    add(fase);
+        // Depois cria o personagem
+        deus = new God("─═God═─", "posseprincipal.png");
+        deus.setX(100);
+        deus.setY(100);
+        fase.getPersonagens().add(deus);
 
-    // Configura o teclado UMA ÚNICA VEZ
-    Teclado teclado = new Teclado(fase);
-    addKeyListener(teclado);
+        // Adiciona a fase ao container
+        add(fase);
 
-    fase.setFocusable(true);
-    fase.requestFocusInWindow();
+        // Configura o teclado UMA ÚNICA VEZ
+        Teclado teclado = new Teclado(fase);
+        addKeyListener(teclado);
 
-    gameLoop = new Timer(16, this::updateGame);
-    gameLoop.start();
+        fase.setFocusable(true);
+        fase.requestFocusInWindow();
 
-    setVisible(true);
-}
+        gameLoop = new Timer(16, this::updateGame);
+        gameLoop.start();
+
+        setVisible(true);
+    }
 
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
@@ -97,7 +96,7 @@ public class Container extends JFrame {
         fase.atualizar();
         for (var p : fase.getPersonagens()) {
             // Ensure p is a God instance before casting and checking isMorto()
-            if (p instanceof God && ((God) p).isMorto()) { 
+            if (p instanceof God && ((God) p).isMorto()) {
                 gameOver();
                 break;
             }
@@ -126,14 +125,14 @@ public class Container extends JFrame {
         getContentPane().removeAll(); // Clear existing components
 
         // Update the 'deus' object with the loaded player data
-        this.deus = dados.getJogador(); 
-        
+        this.deus = dados.getJogador();
+
         // Create a new Fase and populate it with loaded data
         fase = new Fase();
         fase.getPersonagens().add(this.deus); // Add the loaded 'deus'
-        
+
         // Clear existing souls and add loaded souls
-        fase.getAlmas().clear(); 
+        fase.getAlmas().clear();
         for (Alma alma : dados.getAlmas()) {
             fase.getAlmas().add(alma);
         }
@@ -152,14 +151,14 @@ public class Container extends JFrame {
     private void restartGame() {
         gameLoop.stop(); // Stop current game loop
         getContentPane().removeAll(); // Clear existing components
-        
+
         // Reinitialize everything for a new game
         fase = new Fase();
         deus = new God("─═God═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
-        
+
         addKeyListener(new Teclado(fase));
         add(fase);
         fase.setFocusable(true); // Ensure focus is set to the new Fase
@@ -175,7 +174,7 @@ public class Container extends JFrame {
         // Assuming HomePrincipal is your application's entry point or main menu.
         // If it simply creates a new Container, you might have an infinite loop here.
         // Consider if you really want to create a brand new HomePrincipal or just close the game.
-        new HomePrincipal(); 
+        new HomePrincipal();
     }
 
     public static void main(String[] args) {
