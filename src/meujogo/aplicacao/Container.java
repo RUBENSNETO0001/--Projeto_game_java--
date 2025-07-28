@@ -14,7 +14,7 @@ public class Container extends JFrame {
 
     private Fase fase;
     private Timer gameLoop;
-    private God deus; // This needs to be updated on load
+    private God deus; 
 
     public Container() {
         initGame();
@@ -22,36 +22,36 @@ public class Container extends JFrame {
     }
 
     private void initGame() {
-        setTitle("God Game");
-        setSize(1200, 708);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+    setTitle("God Game");
+    setSize(1200, 708);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setLocationRelativeTo(null);
+    setResizable(false);
 
-        // Primeiro cria a fase
-        fase = new Fase();
+    // Primeiro cria a fase
+    fase = new Fase();
+    
+    // Depois cria o personagem
+    deus = new God("─═God═─", "posseprincipal.png");
+    deus.setX(100);
+    deus.setY(100);
+    fase.getPersonagens().add(deus);
 
-        // Depois cria o personagem
-        deus = new God("─═God═─", "posseprincipal.png");
-        deus.setX(100);
-        deus.setY(100);
-        fase.getPersonagens().add(deus);
+    // Adiciona a fase ao container
+    add(fase);
 
-        // Adiciona a fase ao container
-        add(fase);
+    // Configura o teclado UMA ÚNICA VEZ
+    Teclado teclado = new Teclado(fase);
+    addKeyListener(teclado);
 
-        // Configura o teclado UMA ÚNICA VEZ
-        Teclado teclado = new Teclado(fase);
-        addKeyListener(teclado);
+    fase.setFocusable(true);
+    fase.requestFocusInWindow();
 
-        fase.setFocusable(true);
-        fase.requestFocusInWindow();
+    gameLoop = new Timer(16, this::updateGame);
+    gameLoop.start();
 
-        gameLoop = new Timer(16, this::updateGame);
-        gameLoop.start();
-
-        setVisible(true);
-    }
+    setVisible(true);
+}
 
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
@@ -95,7 +95,7 @@ public class Container extends JFrame {
         }
         fase.atualizar();
         for (var p : fase.getPersonagens()) {
-            if (p instanceof God && ((God) p).isMorto()) {
+            if (p instanceof God && ((God) p).isMorto()) { 
                 gameOver();
                 break;
             }
@@ -123,24 +123,24 @@ public class Container extends JFrame {
         gameLoop.stop(); 
         getContentPane().removeAll(); 
 
-        this.deus = dados.getJogador();
-
+        this.deus = dados.getJogador(); 
+        
         fase = new Fase();
         fase.getPersonagens().add(this.deus); 
 
-        fase.getAlmas().clear();
+        fase.getAlmas().clear(); 
         for (Alma alma : dados.getAlmas()) {
             fase.getAlmas().add(alma);
         }
 
         addKeyListener(new Teclado(fase));
         add(fase);
-        fase.setFocusable(true);
+        fase.setFocusable(true); 
         fase.requestFocusInWindow();
 
         revalidate();
         repaint();
-        gameLoop.start(); 
+        gameLoop.start();
     }
 
     private void restartGame() {
@@ -152,7 +152,7 @@ public class Container extends JFrame {
         deus.setX(100);
         deus.setY(100);
         fase.getPersonagens().add(deus);
-
+        
         addKeyListener(new Teclado(fase));
         add(fase);
         fase.setFocusable(true); 
@@ -165,7 +165,8 @@ public class Container extends JFrame {
 
     private void restartApplication() {
         dispose();
-        new HomePrincipal();
+        
+        new HomePrincipal(); 
     }
 
     public static void main(String[] args) {
