@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Timer; // Importação adicionada
+import java.util.TimerTask; // Importação adicionada
 import javax.imageio.ImageIO;
+import meujogo.fase.Fase; // Mantida, mas não utilizada diretamente aqui.
 
 public class God extends Personagem implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -27,6 +30,9 @@ public class God extends Personagem implements Serializable {
             if (inputStream != null) {
                 this.imagemOriginal = ImageIO.read(inputStream);
                 this.imagem = imagemOriginal;
+            } else {
+                System.err.println("Arquivo de imagem do personagem não encontrado: res/persona/" + caminhoImagem);
+                criarImagemFallback();
             }
         } catch (IOException e) {
             System.err.println("Erro ao carregar imagem: " + e.getMessage());
@@ -36,6 +42,8 @@ public class God extends Personagem implements Serializable {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/persona/efeitoalma.png")) {
             if (inputStream != null) {
                 this.imagemEfeito = ImageIO.read(inputStream);
+            } else {
+                System.err.println("Arquivo de imagem de efeito não encontrado: res/persona/efeitoalma.png");
             }
         } catch (IOException e) {
             System.err.println("Erro ao carregar imagem de efeito: " + e.getMessage());
@@ -58,6 +66,7 @@ public class God extends Personagem implements Serializable {
         this.imagem = imagemEfeito;
         if (timerEfeito != null) {
             timerEfeito.cancel();
+            timerEfeito.purge(); // Limpa as tarefas agendadas
         }
 
         timerEfeito = new Timer();
@@ -75,6 +84,7 @@ public class God extends Personagem implements Serializable {
         g.setColor(Color.RED);
         g.fillRect(0, 0, 50, 50);
         g.dispose();
+        this.imagemOriginal = this.imagem; // Garante que a imagem original também seja o fallback
     }
 
     public void verificarBordas(Fase fase) {
@@ -85,12 +95,8 @@ public class God extends Personagem implements Serializable {
     }
 
     public void vitoria() {
-        BufferedImage imgVitoria = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
-        var g = imgVitoria.createGraphics();
-        g.setColor(Color.GREEN);
-        g.fillRect(0, 0, 50, 50);
-        g.dispose();
-        this.imagem = imgVitoria;
+        // A lógica de vitória é melhor tratada no Container/Fase para interações de UI
+        // Removido o efeito visual de vitória aqui para centralizar na UI principal
     }
 
     public void morrer() {
@@ -101,6 +107,11 @@ public class God extends Personagem implements Serializable {
         g.fillRect(0, 0, 50, 50);
         g.dispose();
         this.imagem = imgBranca;
+        // Cancela o timer de efeito se o God morrer
+        if (timerEfeito != null) {
+            timerEfeito.cancel();
+            timerEfeito.purge();
+        }
     }
 
     public BufferedImage getImagem() {

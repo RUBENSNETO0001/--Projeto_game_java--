@@ -3,6 +3,7 @@ package meujogo.modelo;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javax.imageio.ImageIO;
 
@@ -22,6 +23,8 @@ public class Alma implements Serializable {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/almas/" + caminhoImagem)) {
             if (inputStream != null) {
                 this.imagem = ImageIO.read(inputStream);
+            } else {
+                System.err.println("Arquivo não encontrado: res/almas/" + caminhoImagem);
             }
         } catch (IOException e) {
             System.err.println("Erro ao carregar imagem da alma: " + e.getMessage());

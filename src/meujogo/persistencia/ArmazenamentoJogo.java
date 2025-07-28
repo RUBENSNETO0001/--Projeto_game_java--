@@ -23,7 +23,7 @@ public class ArmazenamentoJogo {
                  new FileOutputStream(ARQUIVO_SAVE))) {
                 DadosJogo dados = new DadosJogo(jogador, almas);
                 out.writeObject(dados);
-                System.out.println("Jogo salvo com sucesso em: " + 
+                System.out.println("Jogo salvo com sucesso em: " +
                                   ARQUIVO_SAVE);
                 return true;
             }
@@ -36,7 +36,7 @@ public class ArmazenamentoJogo {
 
     public static DadosJogo carregarJogo() {
         File arquivo = new File(ARQUIVO_SAVE);
-        
+
         if (!arquivo.exists() || arquivo.length() == 0) {
             System.out.println("Arquivo de save não encontrado ou vazio");
             return null;
@@ -44,18 +44,18 @@ public class ArmazenamentoJogo {
 
         try (ObjectInputStream in = new ObjectInputStream(
              new BufferedInputStream(new FileInputStream(arquivo)))) {
-            
+
             DadosJogo dados = (DadosJogo) in.readObject();
             System.out.println("Jogo carregado com sucesso!");
             return dados;
-            
+
         } catch (EOFException e) {
             System.err.println("Arquivo corrompido (EOF): " + e.getMessage());
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Erro ao carregar jogo: " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         return null;
     }
 }

@@ -1,12 +1,7 @@
 package meujogo.aplicacao;
 
 import javax.swing.*;
-<<<<<<< HEAD
-=======
-
 import meujogo.ui.Container;
-
->>>>>>> parent of 7105bf5 (atualização final)
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -36,7 +31,7 @@ public class HomePrincipal extends JFrame {
         JButton startButton = createStyledButton("Começar Jogo");
         startButton.addActionListener(e -> {
             dispose();
-            new Container();
+            SwingUtilities.invokeLater(Container::new);
         });
 
         JButton videoButton = createStyledButton("Assistir Introdução");
@@ -79,24 +74,24 @@ public class HomePrincipal extends JFrame {
     private void openVideo() {
         File videoFile = new File("res/vid/inicio.mp4");
 
-        if (!Desktop.isDesktopSupported() || !videoFile.exists()) {
-            String errorMsg = "Não foi possível abrir o vídeo.";
-            if (!Desktop.isDesktopSupported()) {
-                errorMsg += "\nRecurso Desktop não suportado.";
-            }
-            if (!videoFile.exists()) {
-                errorMsg += "\nArquivo não encontrado: " + videoFile.getAbsolutePath();
-            }
-            JOptionPane.showMessageDialog(this, errorMsg, "Erro", JOptionPane.ERROR_MESSAGE);
+        if (!Desktop.isDesktopSupported()) {
+            JOptionPane.showMessageDialog(this, "Recurso Desktop não suportado pelo sistema.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!videoFile.exists()) {
+            JOptionPane.showMessageDialog(this, "O arquivo de vídeo não foi encontrado: " + videoFile.getAbsolutePath(), "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         try {
             Desktop.getDesktop().open(videoFile);
+            System.out.println("Vídeo aberto com sucesso!");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Erro ao abrir vídeo: " + e.getMessage(), 
+            JOptionPane.showMessageDialog(this,
+                "Erro ao abrir vídeo: " + e.getMessage(),
                 "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -104,11 +99,13 @@ public class HomePrincipal extends JFrame {
         private final Image backgroundImage;
 
         public BackgroundPanel(String imagePath) {
+            Image tempImage = null;
             try {
-                backgroundImage = new ImageIcon(getClass().getResource(imagePath)).getImage();
+                tempImage = new ImageIcon(getClass().getResource(imagePath)).getImage();
             } catch (Exception e) {
-                throw new RuntimeException("Erro ao carregar imagem de fundo: " + e.getMessage(), e);
+                System.err.println("Erro ao carregar imagem de fundo: " + e.getMessage());
             }
+            this.backgroundImage = tempImage;
         }
 
         @Override

@@ -17,7 +17,7 @@ public class Fase extends JPanel {
     private final List<Alma> almas;
     private final List<Cometa> cometas;
     private final Random random;
-    private final Timer timerCometas;
+    private transient java.util.Timer timerCometas;
     private boolean jogoAtivo;
 
     public Fase() {
@@ -35,7 +35,7 @@ public class Fase extends JPanel {
         }
 
         criarAlmas();
-        timerCometas = new Timer();
+        timerCometas = new java.util.Timer();
         iniciarSpawnCometas();
     }
 
@@ -43,16 +43,37 @@ public class Fase extends JPanel {
         return Collections.unmodifiableList(almas);
     }
 
-    private void criarAlmas() {
-        String[] imagensAlmas = {"alma.png"};
-        for (int i = 0; i < 5; i++) {
-            int x = random.nextInt(1000) + 100;
-            int y = random.nextInt(500) + 100;
-            almas.add(new Alma(x, y, imagensAlmas[0]));
-        }
+    public List<Alma> getAlmasModifiable() {
+        return almas;
     }
 
-    private void iniciarSpawnCometas() {
+    public List<Personagem> getPersonagens() {
+        return Collections.unmodifiableList(personagens);
+    }
+
+    public List<Personagem> getPersonagensModifiable() {
+        return personagens;
+    }
+
+    private void criarAlmas() {
+        String[] imagensAlmas = {"alma.png"};
+        // Garante que o painel tenha tamanho antes de criar almas
+        SwingUtilities.invokeLater(() -> {
+            for (int i = 0; i < 5; i++) {
+                int x = random.nextInt(getWidth() - 200) + 100; // Ajustado para o tamanho do painel
+                int y = random.nextInt(getHeight() - 200) + 100; // Ajustado para o tamanho do painel
+                almas.add(new Alma(x, y, imagensAlmas[0]));
+            }
+        });
+    }
+
+    public void iniciarSpawnCometas() {
+        // Cancela e purga qualquer timer existente para evitar múltiplas instâncias
+        if (timerCometas != null) {
+            timerCometas.cancel();
+            timerCometas.purge();
+        }
+        timerCometas = new java.util.Timer();
         timerCometas.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -76,10 +97,11 @@ public class Fase extends JPanel {
     public void atualizar() {
         if (!jogoAtivo) return;
 
-        if (todasAlmasColetadas()) {
-            encerrarJogoComVitoria();
-            return;
-        }
+        // A condição de vitória é tratada no Container para controle do game loop principal
+        // if (todasAlmasColetadas()) {
+        //     encerrarJogoComVitoria();
+        //     return;
+        // }
 
         atualizarCometas();
         verificarColisoes();
@@ -87,20 +109,28 @@ public class Fase extends JPanel {
     }
 
     private void atualizarCometas() {
-        cometas.removeIf(cometa -> {
+        Iterator<Cometa> iterator = cometas.iterator();
+        while (iterator.hasNext()) {
+            Cometa cometa = iterator.next();
             cometa.mover();
-            if (!cometa.isAtivo()) return true;
-            
-            for (Personagem p : personagens) {
-                if (p instanceof God && cometa.colideCom((God) p)) {
-                    ((God) p).morrer();
-                    jogoAtivo = false;
-                    break;
+            if (!cometa.isAtivo()) {
+                iterator.remove();
+            } else {
+                // Iterar sobre uma cópia da lista de personagens para evitar ConcurrentModificationException
+                for (Personagem p : new ArrayList<>(personagens)) {
+                    if (p instanceof God) {
+                        God god = (God) p;
+                        if (!god.isMorto() && cometa.colideCom(god)) {
+                            god.morrer();
+                            jogoAtivo = false; // Define o jogo como inativo em caso de morte
+                            break; // Sai do loop interno, pois o jogador morreu
+                        }
+                    }
                 }
             }
-            return false;
-        });
+        }
     }
+
 
     private void verificarColisoes() {
         personagens.stream()
@@ -110,10 +140,7 @@ public class Fase extends JPanel {
 
     private void encerrarJogoComVitoria() {
         jogoAtivo = false;
-        personagens.stream()
-            .filter(p -> p instanceof God)
-            .findFirst()
-            .ifPresent(p -> ((God) p).vitoria());
+        // O tratamento de vitória será feito no Container
     }
 
     @Override
@@ -133,7 +160,10 @@ public class Fase extends JPanel {
             .filter(Cometa::isAtivo)
             .forEach(cometa -> desenharCometa(grafico, cometa));
 
-        personagens.forEach(p -> desenharPersonagem(grafico, p));
+        // Desenha o personagem God apenas se não estiver morto
+        personagens.stream()
+                .filter(p -> p instanceof God && !((God)p).isMorto())
+                .forEach(p -> desenharPersonagem(grafico, p));
     }
 
     private void desenharAlma(Graphics2D g, Alma alma) {
@@ -164,29 +194,46 @@ public class Fase extends JPanel {
     }
 
     private void verificarColisaoComAlmas(God god) {
-        almas.stream()
-            .filter(alma -> !alma.isColetada() && colisao(god, alma))
-            .findFirst()
-            .ifPresent(alma -> {
+        // Usar uma cópia para evitar ConcurrentModificationException ao remover
+        List<Alma> almasCopy = new ArrayList<>(almas);
+        for (Alma alma : almasCopy) {
+            if (!alma.isColetada() && colisao(god, alma)) {
                 alma.setColetada(true);
                 god.coletarAlma();
-            });
+            }
+        }
     }
 
     private boolean colisao(Personagem a, Alma b) {
-        return Math.abs(a.getX() - b.getX()) < 40 && Math.abs(a.getY() - b.getY()) < 40;
+        int pX = a.getX();
+        int pY = a.getY();
+        int pWidth = 50; // Largura do God
+        int pHeight = 50; // Altura do God
+
+        int aX = b.getX();
+        int aY = b.getY();
+        int aWidth = 30; // Largura da Alma
+        int aHeight = 30; // Altura da Alma
+
+        return (pX < aX + aWidth &&
+                pX + pWidth > aX &&
+                pY < aY + aHeight &&
+                pY + pHeight > aY);
     }
 
     public boolean isJogoAtivo() {
         return jogoAtivo;
     }
 
-    public List<Personagem> getPersonagens() {
-        return Collections.unmodifiableList(personagens);
+    public void setJogoAtivo(boolean jogoAtivo) {
+        this.jogoAtivo = jogoAtivo;
     }
 
     public void pararJogo() {
         jogoAtivo = false;
-        timerCometas.cancel();
+        if (timerCometas != null) {
+            timerCometas.cancel();
+            timerCometas.purge(); // Limpa as tarefas agendadas
+        }
     }
 }

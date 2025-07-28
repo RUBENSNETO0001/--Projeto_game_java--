@@ -1,16 +1,10 @@
-package meujogo.ui;
+package meujogo.aplicacao;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-<<<<<<< HEAD:src/meujogo/aplicacao/Container.java
-import java.awt.event.ActionListener;
-=======
-
 import meujogo.aplicacao.HomePrincipal;
->>>>>>> parent of 7105bf5 (atualização final):src/meujogo/ui/Container.java
 import meujogo.controller.Teclado;
 import meujogo.fase.Fase;
-import meujogo.modelo.Alma;
 import meujogo.modelo.God;
 import meujogo.persistencia.ArmazenamentoJogo;
 import meujogo.persistencia.DadosJogo;
@@ -36,10 +30,17 @@ public class Container extends JFrame {
         deus = new God("─═God═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
-        fase.getPersonagens().add(deus);
+        ((java.util.List<meujogo.modelo.Personagem>) fase.getPersonagensModifiable()).add(deus);
 
         add(fase);
+        // Remova KeyListeners existentes para evitar duplicações
+        if (getKeyListeners().length > 0) {
+            for (java.awt.event.KeyListener kl : getKeyListeners()) {
+                removeKeyListener(kl);
+            }
+        }
         addKeyListener(new Teclado(fase));
+
 
         gameLoop = new Timer(16, this::updateGame);
         gameLoop.start();
@@ -50,13 +51,13 @@ public class Container extends JFrame {
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Jogo");
-        
+
         JMenuItem salvarItem = new JMenuItem("Salvar");
         salvarItem.addActionListener(e -> salvarJogo());
-        
+
         JMenuItem carregarItem = new JMenuItem("Carregar");
         carregarItem.addActionListener(e -> carregarJogo());
-        
+
         menu.add(salvarItem);
         menu.add(carregarItem);
         menuBar.add(menu);
@@ -90,13 +91,17 @@ public class Container extends JFrame {
     }
 
     private void updateGame(ActionEvent e) {
+        if (!fase.isJogoAtivo()) {
+            return;
+        }
+
         if (fase.todasAlmasColetadas()) {
             vitoria();
             return;
         }
-        
+
         fase.atualizar();
-        
+
         if (deus.isMorto()) {
             gameOver();
         }
@@ -105,8 +110,8 @@ public class Container extends JFrame {
     private void vitoria() {
         gameLoop.stop();
         fase.pararJogo();
-        JOptionPane.showMessageDialog(this, 
-            "Parabéns! Você coletou todas as almas!\nVocê venceu o jogo!", 
+        JOptionPane.showMessageDialog(this,
+            "Parabéns! Você coletou todas as almas!\nVocê venceu o jogo!",
             "Vitória", JOptionPane.INFORMATION_MESSAGE);
         restartApplication();
     }
@@ -114,10 +119,10 @@ public class Container extends JFrame {
     private void gameOver() {
         gameLoop.stop();
         fase.pararJogo();
-        int resposta = JOptionPane.showConfirmDialog(this, 
-            "Game Over! O cometa te matou!\nDeseja jogar novamente?", 
+        int resposta = JOptionPane.showConfirmDialog(this,
+            "Game Over! O cometa te matou!\nDeseja jogar novamente?",
             "Fim de Jogo", JOptionPane.YES_NO_OPTION);
-            
+
         if (resposta == JOptionPane.YES_OPTION) {
             restartGame();
         } else {
@@ -132,15 +137,21 @@ public class Container extends JFrame {
 
         this.deus = dados.getJogador();
         fase = new Fase();
-        fase.getPersonagens().add(deus);
-
-        fase.getAlmas().clear();
-        dados.getAlmas().forEach(fase.getAlmas()::add);
+        ((java.util.List<meujogo.modelo.Personagem>) fase.getPersonagensModifiable()).add(this.deus);
+        fase.getAlmasModifiable().clear();
+        fase.getAlmasModifiable().addAll(dados.getAlmas());
 
         add(fase);
+        if (getKeyListeners().length > 0) {
+            for (java.awt.event.KeyListener kl : getKeyListeners()) {
+                removeKeyListener(kl);
+            }
+        }
         addKeyListener(new Teclado(fase));
         revalidate();
         repaint();
+        fase.iniciarSpawnCometas();
+        fase.setJogoAtivo(true);
         gameLoop.start();
     }
 
@@ -153,12 +164,19 @@ public class Container extends JFrame {
         deus = new God("─═God═─", "posseprincipal.png");
         deus.setX(100);
         deus.setY(100);
-        fase.getPersonagens().add(deus);
+        ((java.util.List<meujogo.modelo.Personagem>) fase.getPersonagensModifiable()).add(deus);
 
         add(fase);
+        if (getKeyListeners().length > 0) {
+            for (java.awt.event.KeyListener kl : getKeyListeners()) {
+                removeKeyListener(kl);
+            }
+        }
         addKeyListener(new Teclado(fase));
         revalidate();
         repaint();
+        fase.iniciarSpawnCometas();
+        fase.setJogoAtivo(true);
         gameLoop.start();
     }
 

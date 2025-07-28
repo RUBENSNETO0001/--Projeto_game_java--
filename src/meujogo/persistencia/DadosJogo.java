@@ -18,7 +18,7 @@ public class DadosJogo implements Serializable {
         Objects.requireNonNull(almas, "Lista de almas não pode ser nula");
         this.almas = new ArrayList<>(almas);
     }
-    
+
     public List<Alma> getAlmas() {
         return Collections.unmodifiableList(almas);
     }

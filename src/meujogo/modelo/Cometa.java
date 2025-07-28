@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 public class Cometa {
     private int x, y;
     private int velocidade;
-    private BufferedImage imagem;
+    private transient BufferedImage imagem;
     private boolean ativo;
     private int largura = 60;
     private int altura = 60;
@@ -41,10 +41,10 @@ public class Cometa {
     }
 
     public boolean colideCom(God god) {
-        return ativo && 
-               x < god.getX() + 50 && 
-               x + largura > god.getX() && 
-               y < god.getY() + 50 && 
+        return ativo &&
+               x < god.getX() + 50 &&
+               x + largura > god.getX() &&
+               y < god.getY() + 50 &&
                y + altura > god.getY();
     }
 
