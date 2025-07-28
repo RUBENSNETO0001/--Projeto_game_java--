@@ -1,8 +1,13 @@
-package meujogo.aplicacao;
+package meujogo.ui;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+<<<<<<< HEAD:src/meujogo/aplicacao/Container.java
 import java.awt.event.ActionListener;
+=======
+
+import meujogo.aplicacao.HomePrincipal;
+>>>>>>> parent of 7105bf5 (atualização final):src/meujogo/ui/Container.java
 import meujogo.controller.Teclado;
 import meujogo.fase.Fase;
 import meujogo.modelo.Alma;

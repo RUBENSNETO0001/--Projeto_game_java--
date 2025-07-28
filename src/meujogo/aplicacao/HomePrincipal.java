@@ -1,6 +1,12 @@
 package meujogo.aplicacao;
 
 import javax.swing.*;
+<<<<<<< HEAD
+=======
+
+import meujogo.ui.Container;
+
+>>>>>>> parent of 7105bf5 (atualização final)
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
