@@ -1,4 +1,4 @@
-    package meujogo.persistencia;
+package meujogo.persistencia;
 
 import meujogo.modelo.Alma;
 import meujogo.modelo.God;

@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 
 public class Alma implements Serializable {
     private int x, y;
-    private transient BufferedImage imagem; // marked as transient as BufferedImage isn't Serializable
+    private transient BufferedImage imagem; 
     private boolean coletada = false;
 
     public Alma(int x, int y, String caminhoImagem) {

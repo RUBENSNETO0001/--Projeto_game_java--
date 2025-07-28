@@ -138,7 +138,6 @@ public class HomePrincipal extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Garante que a UI seja criada na Thread de despacho de eventos do Swing
         SwingUtilities.invokeLater(() -> {
             new HomePrincipal();
         });

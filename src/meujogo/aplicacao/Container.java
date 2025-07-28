@@ -95,7 +95,6 @@ public class Container extends JFrame {
         }
         fase.atualizar();
         for (var p : fase.getPersonagens()) {
-            // Ensure p is a God instance before casting and checking isMorto()
             if (p instanceof God && ((God) p).isMorto()) {
                 gameOver();
                 break;
@@ -121,38 +120,33 @@ public class Container extends JFrame {
     }
 
     private void reiniciarJogoComDados(DadosJogo dados) {
-        gameLoop.stop(); // Stop current game loop
-        getContentPane().removeAll(); // Clear existing components
+        gameLoop.stop(); 
+        getContentPane().removeAll(); 
 
-        // Update the 'deus' object with the loaded player data
         this.deus = dados.getJogador();
 
-        // Create a new Fase and populate it with loaded data
         fase = new Fase();
-        fase.getPersonagens().add(this.deus); // Add the loaded 'deus'
+        fase.getPersonagens().add(this.deus); 
 
-        // Clear existing souls and add loaded souls
         fase.getAlmas().clear();
         for (Alma alma : dados.getAlmas()) {
             fase.getAlmas().add(alma);
         }
 
-        // Re-add listeners and components
         addKeyListener(new Teclado(fase));
         add(fase);
-        fase.setFocusable(true); // Ensure focus is set to the new Fase
+        fase.setFocusable(true);
         fase.requestFocusInWindow();
 
         revalidate();
         repaint();
-        gameLoop.start(); // Restart the game loop
+        gameLoop.start(); 
     }
 
     private void restartGame() {
-        gameLoop.stop(); // Stop current game loop
-        getContentPane().removeAll(); // Clear existing components
+        gameLoop.stop(); 
+        getContentPane().removeAll(); 
 
-        // Reinitialize everything for a new game
         fase = new Fase();
         deus = new God("─═God═─", "posseprincipal.png");
         deus.setX(100);
@@ -161,19 +155,16 @@ public class Container extends JFrame {
 
         addKeyListener(new Teclado(fase));
         add(fase);
-        fase.setFocusable(true); // Ensure focus is set to the new Fase
+        fase.setFocusable(true); 
         fase.requestFocusInWindow();
 
         revalidate();
         repaint();
-        gameLoop.start(); // Restart the game loop
+        gameLoop.start(); 
     }
 
     private void restartApplication() {
         dispose();
-        // Assuming HomePrincipal is your application's entry point or main menu.
-        // If it simply creates a new Container, you might have an infinite loop here.
-        // Consider if you really want to create a brand new HomePrincipal or just close the game.
         new HomePrincipal();
     }
 
