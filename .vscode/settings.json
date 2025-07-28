@@ -1,7 +1,0 @@
-{
-    "java.debug.settings.onBuildFailureProceed": true,
-    "java.debug.settings.hotCodeReplace": "auto",
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar"
-    ]
-}
