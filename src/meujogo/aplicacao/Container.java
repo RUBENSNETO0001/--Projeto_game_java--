@@ -14,7 +14,7 @@ public class Container extends JFrame {
 
     private Fase fase;
     private Timer gameLoop;
-    private God deus; // This needs to be updated on load
+    private God deus; 
 
     public Container() {
         initGame();
