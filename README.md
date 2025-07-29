@@ -6,5 +6,5 @@ Esse projeto/game e feita para o final da materia de Orientação a Objeto.
 **RUBENS NETO MARTINS SUAREZ**
 
 ## Linguagem Usada
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg"/>
 
