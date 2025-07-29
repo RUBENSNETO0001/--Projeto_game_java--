@@ -1,0 +1,8 @@
+com\godgame\model\Comet.class
+com\godgame\model\Player.class
+com\godgame\controller\GameController.class
+com\godgame\service\GameService.class
+com\godgame\model\GameState.class
+com\godgame\config\WebSocketConfig.class
+com\godgame\model\Soul.class
+com\godgame\GodGameApplication.class

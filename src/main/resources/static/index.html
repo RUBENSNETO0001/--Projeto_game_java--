@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>God Game - Web Version</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="homeScreen" class="screen active">
+        <div class="background-home">
+            <div class="menu-container">
+                <h1 class="game-title">God Game</h1>
+                <div class="button-container">
+                    <button id="startBtn" class="menu-btn">Começar Jogo</button>
+                    <button id="videoBtn" class="menu-btn">Assistir Introdução</button>
+                    <button id="exitBtn" class="menu-btn">Sair</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameScreen" class="screen">
+        <div class="game-container">
+            <div class="game-header">
+                <div class="game-info">
+                    <span id="soulsCount">Almas: 0/5</span>
+                    <span id="playerName">─═God═─</span>
+                </div>
+                <div class="game-controls">
+                    <button id="saveBtn" class="control-btn">Salvar</button>
+                    <button id="loadBtn" class="control-btn">Carregar</button>
+                    <button id="homeBtn" class="control-btn">Menu</button>
+                </div>
+            </div>
+            <canvas id="gameCanvas" width="1200" height="700"></canvas>
+            <div class="instructions">
+                <p>Use as setas do teclado para mover. Colete todas as almas e evite os cometas!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <video id="introVideo" controls width="800">
+                <source src="res/vid/inicio.mp4" type="video/mp4">
+                Seu navegador não suporta o elemento de vídeo.
+            </video>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
