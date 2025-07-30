@@ -8,3 +8,9 @@ Esse projeto/game e feita para o final da materia de Orientação a Objeto.
 ## Linguagem Usada
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg"/>
 
+## Comandos
+### para inicializar a conexão do localhost
+mvn spring-boot:run
+
+### para inicializar no navegador
+http://localhost:8080/
